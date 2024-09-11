@@ -1,6 +1,6 @@
 
 import { FontFiles } from '@/Consts';
-import * as VIEWER from 'x-viewer'
+import * as VIEWER from 'dxf-viewer'
 
 export const createViewer = async (viewerCfg?: VIEWER.Viewer2dConfig) => {
   console.log("Initializing viewer...");

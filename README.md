@@ -22,7 +22,7 @@ npm run lint
 ```
 
 
-# x-viewer
+# dxf-viewer
 This example project is built on a WebGL based JS SDK, which provides a Viewer2d.
 
 ### Viewer2d
@@ -30,7 +30,7 @@ The Viewer2d class is utilized for viewing 2D drawings and PDF. To work with DWG
 
 ### Example
 ``` typescript
-import { Viewer2d, Viewer2dConfig, ModelConfig } from "x-viewer";
+import { Viewer2d, Viewer2dConfig, ModelConfig } from "dxf-viewer";
 
 const viewerCfg: Viewer2dConfig = {
     containerId: "myCanvas",
