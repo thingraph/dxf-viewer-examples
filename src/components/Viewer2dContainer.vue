@@ -6,7 +6,7 @@
 import { defineComponent, ref, provide } from 'vue';
 import { useStore, mapState, mapMutations, mapActions } from 'vuex';
 
-import * as VIEWER from 'x-viewer'
+import * as VIEWER from 'dxf-viewer'
 import { useRoute } from 'vue-router';
 import { Example } from '@/Defines'
 import { fetchExamples } from "@/uitls/Utils"

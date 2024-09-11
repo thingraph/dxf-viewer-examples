@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import * as VIEWER from 'x-viewer'
+import * as VIEWER from 'dxf-viewer'
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import NavigationPanel from '@/components/NavigationPanel.vue';
