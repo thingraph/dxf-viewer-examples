@@ -1,12 +1,12 @@
 /* Original url: https://at.alicdn.com/t/c/font_2809422_kipm6ycaet.css */
 
 @font-face {
-  font-family: "x-viewer-iconfont2";
+  font-family: "dxf-viewer-iconfont2";
   src: url('iconfont2.ttf') format('truetype');
 }
 
-.x-viewer-iconfont2 {
-  font-family: "x-viewer-iconfont2" !important;
+.dxf-viewer-iconfont2 {
+  font-family: "dxf-viewer-iconfont2" !important;
   font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
