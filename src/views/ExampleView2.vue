@@ -83,6 +83,7 @@ export default defineComponent({
     }
     // TODO: support more than one models in an example
     const modelCfg = example.models[0] as VIEWER.ModelConfig
+    modelCfg.src = process.env.BASE_URL + modelCfg.src;
     console.log("Going to load", modelCfg.src)
     const onProgress = (event: ProgressEvent) => {
       const progress = ((event.loaded * 100) / event.total).toFixed(1)
