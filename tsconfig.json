@@ -16,7 +16,6 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
-      "node"
     ],
     "paths": {
       "@/*": [
@@ -38,6 +37,7 @@
     "tests/**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dxf-viewer.esm.min.js"
   ]
 }
