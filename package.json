@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
-    "node-sass": "^9.0.0",
+    "sass": "latest",
     "tslib": "^2.6.2",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
@@ -50,6 +50,9 @@
     },
     "rules": {}
   },
+  "eslintIgnore": [
+    "public/libs/dxf-viewer"
+  ],
   "browserslist": [
     "> 1%",
     "last 2 versions",
