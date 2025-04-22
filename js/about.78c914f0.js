@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkdxf_viewer_examples"]=self["webpackChunkdxf_viewer_examples"]||[]).push([[594],{7568:function(e,n,u){u.r(n),u.d(n,{default:function(){return f}});var a=u(3822);const r={class:"about"};function s(e,n){return(0,a.uX)(),(0,a.CE)("div",r,n[0]||(n[0]=[(0,a.Lk)("h1",null,"This is an about page",-1)]))}var t=u(4323);const c={},i=(0,t.A)(c,[["render",s]]);var f=i}}]);
+//# sourceMappingURL=about.78c914f0.js.map
