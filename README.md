@@ -1,26 +1,10 @@
 # dxf-viewer-examples
-Examples for viewing DXF files using Three.js and Vue3.
+Examples for viewing DXF files using Three.js.
 
-## Project setup
+## Run examples
 ```
-npm install
+npm start
 ```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
 
 # dxf-viewer
 This example project is built on a WebGL based JS SDK, which provides a Viewer2d.
