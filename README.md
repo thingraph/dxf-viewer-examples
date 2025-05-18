@@ -43,18 +43,18 @@ viewer.goToHomeView();
 - Supported entity types includes: POINT, 3DFACE, ARC, ATTDEF, ATTRIB, CIRCLE, DIMENSION, MLEADER, MULTILEADER, ELLIPSE, HATCH, INSERT, LEADER, LINE, LWPOLYLINE, MTEXT, RAY, POLYLINE, SOLID, SPLINE, TEXT, VERTEX, VIEWPORT, XLINE, etc. IMAGE, OLE2FRAME, REGION are partially supported.
 
 - Load and view dxf file
-<img src="public/images/snapshots/load_and_view.gif" width="400">
+<img src="images/snapshots/load_and_view.gif" width="400">
 - Switch between layouts
-<img src="public/images/snapshots/layouts.gif" width="400">
+<img src="images/snapshots/layouts.gif" width="400">
 - Distance measurement
-<img src="public/images/snapshots/measure_dist.gif" width="400">
+<img src="images/snapshots/measure_dist.gif" width="400">
 - Area measurement
 - Angle measurement
 - Markups
-<img src="public/images/snapshots/markups.gif" width="400">
+<img src="images/snapshots/markups.gif" width="400">
 - Comparison
-<img src="public/images/snapshots/dxf_compare_2_viewports.gif" width="400">
-<img src="public/images/snapshots/dxf_compare.png" width="400">
+<img src="images/snapshots/dxf_compare_2_viewports.gif" width="400">
+<img src="images/snapshots/dxf_compare.png" width="400">
 - Undo/redo
 
 ### Limitations
