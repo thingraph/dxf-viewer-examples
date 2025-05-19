@@ -1,68 +1,43 @@
-# .github/workflows/auto-deploy.yml
-
-name: auto deploy 🚀
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
 
 on:
-  # 监听push操作
+  # Runs on pushes targeting the default branch
   push:
-    branches:
-      - main # 这里只配置了main分支，所以只有推送main分支才会触发以下任务
-  pull_request:
+    branches: ["main"]
 
-  # 这个选项可以使你手动在 Action tab 页面触发工作流
-  # workflow_dispatch:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  # 允许对仓库的内容进行写操作。包括创建、修改和删除文件、目录以及提交更改等
-  # 这里只配置了push，所以只有推送main分支才会触发以下任务 
-  contents: write
-  # 允许管理 GitHub Pages 服务并对其进行写操作
+  contents: read
   pages: write
+  id-token: write
 
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  # 任务ID
-  build-and-deploy:
-    # 运行环境
-    # runs-on: macos-latest
-    # runs-on: windows-latest
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-    
-    # 步骤
     steps:
-      # 官方action，将代码拉取到虚拟机
       - name: Checkout
-        uses: actions/checkout@v3
-
-      # 建一个名为setup-node的步骤（安装指定版本的Node.js）
-      - name: setup-node 
-        # 使用setup-node@v3这个action
-        uses: actions/setup-node@v3
-        # 指定某个action 可能需要输入的参数
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          node-version: '20'
-
-      # 安装 pnpm
-      - name: Install pnpm
-        run: npm install pnpm -g
-
-      # 安装依赖  
-      - name: Install dependencies
-        run: pnpm i
-      # 打包
-      - name: Build application 🔧
-        run: pnpm run build
-
-      # 部署 https://github.com/JamesIves/github-pages-deploy-action
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        if: github.ref == 'refs/heads/main'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages  # default: gh-pages
-          folder: dist
-          clean: true # Automatically remove deleted files from the deploy branch
-          # commit-message: ${{ github.event.head_commit.message }} # default: `Deploying to gh-pages from @ 3238feb 🚀`
-          # commit-message: "deploy: ${{ github.sha }} (${{ github.event.head_commit.message }}) 🚀 "
+          # Upload entire repository
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
