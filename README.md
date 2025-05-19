@@ -1,26 +1,10 @@
 # dxf-viewer-examples
-Examples for viewing DXF files using Three.js and Vue3.
+Examples for viewing DXF files using Three.js.
 
-## Project setup
+## Run examples
 ```
-npm install
+npm start
 ```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
 
 # dxf-viewer
 This example project is built on a WebGL based JS SDK, which provides a Viewer2d.
@@ -59,18 +43,18 @@ viewer.goToHomeView();
 - Supported entity types includes: POINT, 3DFACE, ARC, ATTDEF, ATTRIB, CIRCLE, DIMENSION, MLEADER, MULTILEADER, ELLIPSE, HATCH, INSERT, LEADER, LINE, LWPOLYLINE, MTEXT, RAY, POLYLINE, SOLID, SPLINE, TEXT, VERTEX, VIEWPORT, XLINE, etc. IMAGE, OLE2FRAME, REGION are partially supported.
 
 - Load and view dxf file
-<img src="public/images/snapshots/load_and_view.gif" width="400">
+<img src="images/snapshots/load_and_view.gif" width="400">
 - Switch between layouts
-<img src="public/images/snapshots/layouts.gif" width="400">
+<img src="images/snapshots/layouts.gif" width="400">
 - Distance measurement
-<img src="public/images/snapshots/measure_dist.gif" width="400">
+<img src="images/snapshots/measure_dist.gif" width="400">
 - Area measurement
 - Angle measurement
 - Markups
-<img src="public/images/snapshots/markups.gif" width="400">
+<img src="images/snapshots/markups.gif" width="400">
 - Comparison
-<img src="public/images/snapshots/dxf_compare_2_viewports.gif" width="400">
-<img src="public/images/snapshots/dxf_compare.png" width="400">
+<img src="images/snapshots/dxf_compare_2_viewports.gif" width="400">
+<img src="images/snapshots/dxf_compare.png" width="400">
 - Undo/redo
 
 ### Limitations

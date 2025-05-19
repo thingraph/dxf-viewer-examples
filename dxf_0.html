@@ -1,0 +1,418 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="
+        width=device-width,
+        initial-scale=1.0,
+        minimum-scale=1.0,
+        maximum-scale=1.0,
+        user-scalable=no">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="./global.css">
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
+    <link rel="stylesheet" href="./settings/SettingsPanel.css">
+
+    <style>
+        #app {
+            width: 100%;
+            height: 100%;
+            background-color: silver;
+        }
+
+        #myCanvas {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .hotpoint {
+            opacity: 0.8;
+            top: 0px;
+            left: 0px;
+        }
+
+        .hotpoint-dot:hover {
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.75);
+            border: 1px solid rgba(127, 255, 255, 0.75);
+        }
+
+        .hotpoint-dot {
+            width: 15px;
+            height: 15px;
+            opacity: 0.8;
+            cursor: pointer;
+            top: 10px;
+            left: 10px;
+            background-color: yellow;
+            border-width: 3px;
+            border-style: dotted;
+            border-color: red;
+            border-radius: 50%;
+        }
+
+        .hotpoint-panel {
+            min-width: 150px;
+            min-height: 30px;
+            opacity: 0.8;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            border-radius: 0px;
+            border: 1px solid rgba(127, 255, 255, 0.25);
+            box-shadow: 0px 0px 3px rgba(0, 255, 255, 0.5);
+            vertical-align: middle;
+            font-size: 12px;
+        }
+
+        .hotpoint-panel:hover {
+            opacity: 1;
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.75);
+            border: 1px solid rgba(127, 255, 255, 0.75);
+        }
+
+        .hotpoint-close {
+            color: black;
+            font-size: 14px;
+            font-family: monospace;
+            background-color: lightskyblue;
+            text-align: right;
+            padding-right: 3px;
+            cursor: pointer;
+        }
+
+        .hotpoint-body {
+            padding: 3px;
+            min-height: 40px;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="myCanvas"></div>
+    </div>
+    <script type="importmap">
+        {
+            "imports": {
+                "@x-viewer/core": "../libs/x-viewer/core/dist/index.esm.js",
+                "@x-viewer/plugins": "../libs/x-viewer/plugins/dist/index.esm.js",
+                "@x-viewer/ui": "../libs/x-viewer/ui/dist/index.esm.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import {
+            Viewer2d,
+            InputManager,
+            ViewerEvent,
+        } from "@x-viewer/core";
+        import {
+            AxisGizmoPlugin,
+            BottomBarPlugin,
+            Viewer2dToolbarPlugin,
+            HotpointPlugin,
+            LayerManagerPlugin,
+            MarkupPlugin,
+            MeasurementPlugin,
+            ScreenshotPlugin,
+            StatsPlugin,
+            ToolbarMenuId,
+        } from "@x-viewer/plugins";
+        import Viewer2dSettingsPanel from './settings/Viewer2dSettingsPanel.js';
+
+        const models = [{
+            modelId: "dxf_0",
+            name: "dxf_0",
+            src: "./models/dxf/dxf_0.dxf",
+            merge: true,
+            visible: true,
+        }, /*{
+            modelId: "dxf_0_1",
+            name: "dxf_0_1",
+            src: "./models/dxf/dxf_0_1.dxf",
+            merge: true,
+            visible: true,
+        }*/];
+        const language = "en"; // "en" or "cn"
+        const viewerCfg = {
+            containerId: "myCanvas",
+            language,
+            enableSpinner: true,
+            enableProgressBar: true,
+            enableLayoutBar: true,
+        };
+        const viewer = new Viewer2d(viewerCfg);
+        // const fontFiles = ["libs/fonts/Microsoft_YaHei_Regular.typeface.json"];
+        const fontFiles = ["./libs/fonts/simplex.shx", "./libs/fonts/hztxt.shx", "./libs/fonts/arial.ttf", "./libs/fonts/Microsoft_YaHei.ttf"];
+        // const fontFiles = ["libs/fonts/Microsoft_YaHei.ttf", "libs/fonts/arial.ttf"];
+        await viewer.setFont(fontFiles);
+
+        window.viewer = viewer;
+
+        const menuConfig = {
+            [ToolbarMenuId.Settings]: {
+                onActive: () => {
+                    console.log("[Toolbar]", "Activate Settings");
+                    if (!window.settingsPanel) {
+                        window.settingsPanel = new Viewer2dSettingsPanel(window.viewer);
+                    }
+                    window.settingsPanel.show();
+                },
+                onDeactive: () => {
+                    console.log("[Toolbar]", "Deactivate Settings");
+                    window.settingsPanel.hide();
+                },
+                mutexIds: [
+                    ToolbarMenuId.Measure,
+                    ToolbarMenuId.MeasureDistance,
+                    ToolbarMenuId.MeasureArea,
+                    ToolbarMenuId.MeasureAngle,
+                    ToolbarMenuId.MeasureCoordinate,
+                ],
+            },
+            [ToolbarMenuId.Layers]: {
+                onActive: () => {
+                    console.log("[Toolbar]", "Activate Layers");
+                    if (!window.layerManager) {
+                        window.layerManager = new LayerManagerPlugin(window.viewer)
+                        window.layerManager.addEventListener("Visibilitychange", (visible) => {
+                            window.toolbar.setActive("Layers", visible);
+                        });
+                    }
+                    window.layerManager.show();
+                },
+                onDeactive: () => {
+                    console.log("[Toolbar]", "Deactivate Layers");
+                    window.layerManager.hide();
+                },
+                mutexIds: [
+                    ToolbarMenuId.Measure,
+                    ToolbarMenuId.MeasureDistance,
+                    ToolbarMenuId.MeasureArea,
+                    ToolbarMenuId.MeasureAngle,
+                    ToolbarMenuId.MeasureCoordinate,
+                ],
+            },
+        };
+        new AxisGizmoPlugin(viewer, { ignoreZAxis: true });
+        new BottomBarPlugin(viewer);
+        const markupPlugin = new MarkupPlugin(viewer);
+        const measurementPlugin = new MeasurementPlugin(viewer, { language });
+        new ScreenshotPlugin(viewer);
+        new StatsPlugin(viewer);
+        const hotpointPlugin = new HotpointPlugin(viewer);
+        window.toolbar = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
+
+        let counter = 0; // to indicate how many models are loading
+        models.forEach((modelCfg) => {
+            if (modelCfg.visible === false) {
+                // visible is true by default
+                return; // only load visible ones
+            }
+            counter++;
+            const onProgress = (event) => {
+                const progress = ((event.loaded * 100) / event.total).toFixed(1);
+                console.log(`[Demo] Loading '${modelCfg.modelId}' progress: ${progress}%`);
+            };
+            try {
+                viewer.loadModel(modelCfg, onProgress).then(() => {
+                    console.log(`[Demo] Loaded model ${modelCfg.src}`);
+                }).finally(() => {
+                    counter--;
+                });
+            } catch (ex) {
+                console.log(ex);
+            }
+        });
+
+        const measurementData = [{
+            type: "Distance",
+            id: "measure_data_id_1",
+            layoutName: "Model",
+            points: [[0, -22000], [6000, -22000]],
+        }, {
+            type: "Area",
+            id: "measure_data_id_2",
+            layoutName: "Model",
+            points: [[0, -23000], [6000, -23000], [6000, -25000], [0, -25000], [0, -23000]],
+        }, {
+            type: "Angle",
+            id: "measure_data_id_3",
+            layoutName: "Model",
+            points: [[0, -26000], [6000, -26000], [4000, -29000]],
+        }, {
+            type: "Distance",
+            id: "measure_data_id_4",
+            layoutName: "Layout1",
+            points: [[0, 0], [0, 200]],
+        }];
+
+        const markupData = [{
+            type: "ArrowMarkup",
+            id: "c6ea70a3-ddb0-4dd0-87c8-bd2491936428",
+            lineWidth: 2,
+            lineColor: [1, 0, 0, 1],
+            fillColor: [1, 0, 0, 1],
+            layoutName: "Model",
+            points: [[-15000, -9000], [-11000, -4000]],
+        }, {
+            type: "RectMarkup",
+            id: "82aba74f-7cd6-40e7-bac0-78d95a7bbecd",
+            lineWidth: 2,
+            lineColor: [1, 0, 0, 1],
+            fillColor: [1, 0, 0, 1],
+            layoutName: "Model",
+            points: [[-7000, -1800], [-1000, -5000]],
+        }, {
+            type: "DotMarkup",
+            id: "82aba74f-7cd6-40e7-bac0-78d95a7bbece",
+            lineWidth: 2,
+            lineColor: [1, 0, 0, 1],
+            fillColor: [0, 0, 0.188, 0.11], // #ff000030
+            layoutName: "Model",
+            points: [[-7000, -8000]],
+        }];
+
+        measurementPlugin.setData(measurementData);
+        markupPlugin.setData(markupData);
+
+        let hotpointCount = 0; // used to generate unique id
+        const hotpointsPerLayout = {}; // a map, the key is layoutName
+        // double click to create a hotpoint
+        document.getElementById("myCanvas").addEventListener("dblclick", (event) => {
+            const target = event.target;
+            const location = viewer.getHitResult(event);
+            if (!location) {
+                return;
+            }
+            const hotpointId = `hotpoint_${hotpointCount}`;
+            const hotpoint = {
+                hotpointId,
+                anchorPosition: [location.x, location.y],
+                visible: true,
+                html: `<div class="hotpoint" id="hotpoint_${hotpointId}">
+                            <div class="hotpoint-dot" id="hotpoint-dot_${hotpointId}"></div>
+                            <div class="hotpoint-panel" id="hotpoint-panel_${hotpointId}">
+                                <div class="hotpoint-close">X</div>
+                                <div class="hotpoint-body">This is a hotpoint with id '${hotpointId}'</div>
+                            </div>
+                        </div>`,
+            }
+            const layoutName = viewer.getActiveLayoutName();
+            if (!hotpointsPerLayout[layoutName]) {
+                hotpointsPerLayout[layoutName] = [];
+            }
+            hotpointsPerLayout[layoutName].push(hotpoint);
+            hotpointPlugin.add(hotpoint);
+            hotpointCount++;
+        });
+        // if clicked on "close" button, close the hotpoint panel
+        // if clicked on hotpoint, open the hotpoint panel
+        document.addEventListener("click", (event) => {
+            const target = event.target;
+            if (target.classList.contains("hotpoint-close")) {
+                target.parentElement.classList.add("hide");
+            } else if (target.classList.contains("hotpoint-dot")) {
+                const hotpointId = target.id.replace("hotpoint-dot_", "");
+                const hotpointPanel = document.getElementById(`hotpoint-panel_${hotpointId}`);
+                if (hotpointPanel.classList.contains("hide")) {
+                    hotpointPanel.classList.remove("hide");
+                } else {
+                    hotpointPanel.classList.add("hide");
+                }
+            }
+        });
+        // manages hotpoints for different layouts
+        viewer.addEventListener(ViewerEvent.LayoutChange, () => {
+            const layoutName = viewer.getActiveLayoutName();
+            hotpointPlugin.clear();
+            const hotpoints = hotpointsPerLayout[layoutName];
+            if (hotpoints) {
+                hotpoints.forEach((h) => hotpointPlugin.add(h));
+            }
+
+            markupPlugin.setData(markupData.filter(markup => markup.layoutName === layoutName));
+            measurementPlugin.setData(measurementData.filter(measure => measure.layoutName === layoutName));
+        });
+
+        viewer.addEventListener(ViewerEvent.MouseClick, (data) => {
+            if (data.markupData) {
+                console.log("Clicked on markup:", data.markupData);
+            }
+            if (data.measureData) {
+                console.log("Clicked on measurement:", data.measureData);
+            }
+            if (data.entityData) {
+                console.log("Clicked on entity:", data.entityData);
+            }
+            if (!data.markupData && !data.measureData && !data.entityData) {
+                console.log("Clicked on background");
+            }
+        })
+
+        viewer.addEventListener(ViewerEvent.MarkupAdd, (data) => {
+            console.log("MarkupAdded", data);
+            const layoutName = viewer.getActiveLayoutName();
+            // Markup and layout correlation
+            data.layoutName = layoutName;
+            const index = markupData.findIndex(markup => markup.id === data.id);
+            if (index > -1) {
+                markupData.splice(index, 1, data);
+            } else {
+                markupData.push(data);
+            }
+        })
+        viewer.addEventListener(ViewerEvent.MarkupUpdate, (data) => {
+            const {oldData, newData} = data;
+            console.log("MarkupUpdated", oldData, newData);
+            const layoutName = viewer.getActiveLayoutName();
+            newData.layoutName = layoutName;
+            const index = markupData.findIndex(markup => markup.id === newData.id);
+            markupData.splice(index, 1, newData);
+        })
+        viewer.addEventListener(ViewerEvent.MarkupRemove, (data) => {
+            console.log("MarkupRemoved", data);
+            const layoutName = viewer.getActiveLayoutName();
+            const index = markupData.findIndex(markup => markup.id === data.id);
+            markupData.splice(index, 1);
+        })
+        viewer.addEventListener(ViewerEvent.BeforeRemoveMarkup, (confirmCallback) => {
+            confirmCallback(confirm("Are you sure to remove the markup?"))
+        })
+
+        viewer.addEventListener(ViewerEvent.MeasurementAdd, (data) => {
+            console.log("MeasurementAdded", data);
+            const layoutName = viewer.getActiveLayoutName();
+            // Measurement and layout correlation
+            data.layoutName = layoutName;
+            const index = measurementData.findIndex(measurement => measurement.id === data.id);
+            if (index > -1) {
+                measurementData.splice(index, 1, data);
+            } else {
+                measurementData.push(data);
+            }
+        })
+        viewer.addEventListener(ViewerEvent.MeasurementRemove, (data) => {
+            console.log("MeasurementRemoved", data);
+            const layoutName = viewer.getActiveLayoutName();
+            const index = measurementData.findIndex(measurement => measurement.id === data.id);
+            measurementData.splice(index, 1);
+        })
+
+        // window.THREE is defined by x-viewer sdk, so caller can use three's types.
+        // Here is an example:
+        // const min = new THREE.Vector3(0, 0, 0);
+        // const max = new THREE.Vector3(100, 0, 100);
+        // const bbox = new THREE.Box3(min, max);
+        // viewer.zoomToBBox(bbox);
+    </script>
+</body>
+
+</html>

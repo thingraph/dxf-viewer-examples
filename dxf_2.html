@@ -1,0 +1,152 @@
+<html>
+
+<head>
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="./global.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
+    <link rel="stylesheet" href="./settings/SettingsPanel.css">
+    <style>
+        #myCanvas {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="myCanvas"></div>
+    </div>
+    <script type="importmap">
+        {
+            "imports": {
+                "@x-viewer/core": "../libs/x-viewer/core/dist/index.esm.js",
+                "@x-viewer/plugins": "../libs/x-viewer/plugins/dist/index.esm.js",
+                "@x-viewer/ui": "../libs/x-viewer/ui/dist/index.esm.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import {
+            Viewer2d,
+        } from "@x-viewer/core";
+        import {
+            AxisGizmoPlugin,
+            BottomBarPlugin,
+            Viewer2dToolbarPlugin,
+            HotpointPlugin,
+            LayerManagerPlugin,
+            MarkupPlugin,
+            MeasurementPlugin,
+            ScreenshotPlugin,
+            StatsPlugin,
+            ToolbarMenuId,
+        } from "@x-viewer/plugins";
+        import Viewer2dSettingsPanel from './settings/Viewer2dSettingsPanel.js';
+
+        const models = [{
+            modelId: "dxf_2",
+            name: "dxf_2",
+            src: "./models/dxf/dxf_2.dxf",
+            merge: true,
+            visible: true,
+        }];
+        const language = "en"; // "en" or "cn"
+        const viewerCfg = {
+            containerId: "myCanvas",
+            language,
+            enableSpinner: true,
+            enableProgressBar: true,
+            enableLayoutBar: true,
+        };
+        const viewer = new Viewer2d(viewerCfg);
+        // const fontFiles = ["libs/fonts/Microsoft_YaHei_Regular.typeface.json"];
+        const fontFiles = ["./libs/fonts/hztxt.shx", "./libs/fonts/simplex.shx"];
+        await viewer.setFont(fontFiles);
+
+        window.viewer = viewer;
+
+        const menuConfig = {
+            [ToolbarMenuId.Settings]: {
+                onActive: () => {
+                    console.log("[Toolbar]", "Activate Settings");
+                    if (!window.settingsPanel) {
+                        window.settingsPanel = new Viewer2dSettingsPanel(window.viewer);
+                    }
+                    window.settingsPanel.show();
+                },
+                onDeactive: () => {
+                    console.log("[Toolbar]", "Deactivate Settings");
+                    window.settingsPanel.hide();
+                },
+                mutexIds: [
+                    ToolbarMenuId.Measure,
+                    ToolbarMenuId.MeasureDistance,
+                    ToolbarMenuId.MeasureArea,
+                    ToolbarMenuId.MeasureAngle,
+                    ToolbarMenuId.MeasureCoordinate,
+                ],
+            },
+            [ToolbarMenuId.Layers]: {
+                onActive: () => {
+                    console.log("[Toolbar]", "Activate Layers");
+                    if (!window.layerManager) {
+                        window.layerManager = new LayerManagerPlugin(window.viewer)
+                        window.layerManager.addEventListener("Visibilitychange", (visible) => {
+                            window.toolbar.setActive("Layers", visible);
+                        });
+                    }
+                    window.layerManager.show();
+                },
+                onDeactive: () => {
+                    console.log("[Toolbar]", "Deactivate Layers");
+                    window.layerManager.hide();
+                },
+                mutexIds: [
+                    ToolbarMenuId.Measure,
+                    ToolbarMenuId.MeasureDistance,
+                    ToolbarMenuId.MeasureArea,
+                    ToolbarMenuId.MeasureAngle,
+                    ToolbarMenuId.MeasureCoordinate,
+                ],
+            },
+        };
+
+        new AxisGizmoPlugin(viewer, { ignoreZAxis: true })
+        new BottomBarPlugin(viewer);
+        new MarkupPlugin(viewer);
+        new MeasurementPlugin(viewer, { language });
+        new ScreenshotPlugin(viewer);
+        new StatsPlugin(viewer);
+        window.toolbar = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
+
+        let counter = 0; // to indicate how many models are loading
+        models.forEach((modelCfg) => {
+            if (modelCfg.visible === false) {
+                // visible is true by default
+                return; // only load visible ones
+            }
+            counter++;
+            const onProgress = (event) => {
+                const progress = ((event.loaded * 100) / event.total).toFixed(1);
+                console.log(`[Demo] Loading '${modelCfg.modelId}' progress: ${progress}%`);
+            };
+            try {
+                viewer
+                    .loadModel(modelCfg, onProgress)
+                    .then(() => {
+                        console.log(`[Demo] Loaded model ${modelCfg.src}`);
+                    })
+                    .finally(() => {
+                        counter--;
+                    });
+            } catch (ex) {
+                console.log(ex);
+            }
+        });
+    </script>
+</body>
+
+</html>

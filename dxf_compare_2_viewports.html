@@ -1,0 +1,222 @@
+<html>
+  <head>
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="./global.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
+    <link rel="stylesheet" href="./compare/dxfComparePanel.css" />
+    <link rel="stylesheet" href="./settings/SettingsPanel.css" />
+    <style>
+      body {
+        font-size: 0;
+      }
+      #myCanvas1,
+      #myCanvas2 {
+        width: calc(50% - 1px);
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        display: inline-block;
+        overflow: hidden;
+      }
+      .split {
+        display: inline-block;
+        width: 1px;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #eee;
+      }
+
+      #syncCamera {
+        position: absolute;
+        text-align: center;
+        top: 20px;
+        left: calc(50% - 40px);
+        height: 40px;
+        width: 80px;
+        font-size: 16px;
+        line-height: 40px;
+        color: #fff;
+        border-radius: 5px;
+        border: 1px solid #409eff;
+        background-color: #409eff;
+        font-family: inherit;
+        cursor: pointer;
+        margin: 5px auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app" class="app">
+      <div id="myCanvas1"></div>
+      <div class="split"></div>
+      <div id="myCanvas2"></div>
+    </div>
+    <button id="syncCamera" title="Click to sync or unsync cameras">unsynced</button>
+
+    <script type="importmap">
+      {
+          "imports": {
+            "@x-viewer/core": "../libs/x-viewer/core/dist/index.esm.js",
+            "@x-viewer/plugins": "../libs/x-viewer/plugins/dist/index.esm.js",
+            "@x-viewer/ui": "../libs/x-viewer/ui/dist/index.esm.js"
+          }
+      }
+    </script>
+    <script type="module">
+        import {
+          DxfCompareHelper,
+        } from "@x-viewer/core";
+        import {
+            AxisGizmoPlugin,
+            BottomBarPlugin,
+            Viewer2dToolbarPlugin,
+            LayerManagerPlugin,
+            MeasurementPlugin,
+            ScreenshotPlugin,
+            ToolbarMenuId,
+        } from "@x-viewer/plugins";
+      import DxfComparePanel from "./compare/dxfComparePanel.js";
+      import Viewer2dSettingsPanel from "./settings/Viewer2dSettingsPanel.js";
+
+      const url1 = "./models/dxf/doors_and_windows.dxf";
+      const url2 = "./models/dxf/doors_and_windows_mopdified.dxf";
+      const compareHelper = new DxfCompareHelper(
+        {
+          containerId: "myCanvas1",
+        },
+        {
+          containerId: "myCanvas2",
+        }
+      );
+      window.compareHelper = compareHelper;
+      const fontFiles = ["./libs/fonts/hztxt.shx", "./libs/fonts/simplex.shx"];
+      await compareHelper.setFont(fontFiles);
+
+      new AxisGizmoPlugin(compareHelper.viewer, { ignoreZAxis: true });
+      new BottomBarPlugin(compareHelper.viewer);
+      new MeasurementPlugin(compareHelper.viewer);
+      new MeasurementPlugin(compareHelper.viewer2);
+      new ScreenshotPlugin(compareHelper.viewer)
+      new ScreenshotPlugin(compareHelper.viewer2)
+
+      compareHelper.viewer.toolbar?.updateMenus(
+        overrideToolbarConfig(compareHelper.viewer)
+      );
+      compareHelper.viewer2.toolbar?.updateMenus(
+        overrideToolbarConfig(compareHelper.viewer2)
+      );
+
+      const syncCameraBtn = document.getElementById("syncCamera");
+      let enableSyncCamera = false;
+      syncCameraBtn.onclick = function () {
+        if (!enableSyncCamera) {
+          compareHelper.enableSyncCamera(true);
+          syncCameraBtn.innerText = "synced";
+        } else {
+          compareHelper.enableSyncCamera(false);
+          syncCameraBtn.innerText = "unsynced";
+        }
+        enableSyncCamera = !enableSyncCamera;
+      };
+
+      const onProgress = (event) => {
+        const progress = ((event.loaded * 100) / event.total).toFixed(2);
+        console.log(`[Demo] Compare progress: ${progress}%`);
+      };
+
+      // compare two specific dxf by default
+      compareHelper.compare({ src: url1, modelId: "dxf_3" }, { src: url2, modelId: "dxf_3_1" }, undefined, onProgress).then(() => {
+        console.log(`[Demo] Compared models: ${url1}, ${url2}`);
+        new DxfComparePanel(compareHelper, compareHelper.container);
+      }).catch((reason) => {
+        console.error(`[Demo] Failed to compare models: ${url1}, ${url2}. reason: ${reason}`);
+      });
+
+      function overrideToolbarConfig(viewer) {
+        return [
+          {
+            menuId: ToolbarMenuId.Settings,
+            config: {
+              onActive: () => {
+                console.log("[Toolbar]", "Activate Settings");
+                if (!viewer.settingsPanel) {
+                  viewer.settingsPanel = new Viewer2dSettingsPanel(viewer);
+                }
+                viewer.settingsPanel.show();
+              },
+              onDeactive: () => {
+                console.log("[Toolbar]", "Deactivate Settings");
+                if (!viewer.settingsPanel) {
+                  viewer.settingsPanel = new Viewer2dSettingsPanel(viewer);
+                }
+                viewer.settingsPanel.hide();
+              },
+            },
+            mutexIds: [
+              ToolbarMenuId.Measure,
+              ToolbarMenuId.MeasureDistance,
+              ToolbarMenuId.MeasureArea,
+              ToolbarMenuId.MeasureAngle,
+              ToolbarMenuId.MeasureCoordinate,
+            ],
+          },
+          {
+            menuId: ToolbarMenuId.Layers,
+            config: {
+              onActive: () => {
+                console.log("[Toolbar]", "Activate Layers");
+                if (!viewer.layerManager) {
+                  viewer.layerManager = new LayerManagerPlugin(viewer);
+                }
+                viewer.layerManager.show();
+              },
+              onDeactive: () => {
+                console.log("[Toolbar]", "Deactivate Layers");
+                viewer.layerManager.hide();
+              },
+            },
+            mutexIds: [
+              ToolbarMenuId.Measure,
+              ToolbarMenuId.MeasureDistance,
+              ToolbarMenuId.MeasureArea,
+              ToolbarMenuId.MeasureAngle,
+              ToolbarMenuId.MeasureCoordinate,
+            ],
+          },
+          {
+            menuId: ToolbarMenuId.MarkupVisibility,
+            config: {
+              visible: false,
+            },
+          },
+          {
+            menuId: ToolbarMenuId.Fullscreen,
+            config: {
+              onClick: (bimViewer, toolbar) => {
+                const isFullScreen = !!document.fullscreenElement;
+                const onResize = () => {
+                  const toolbarMenu = toolbar?.menuList.get(
+                    ToolbarMenuId.Fullscreen
+                  );
+                  toolbarMenu && toolbarMenu.setActive(isFullScreen);
+                };
+
+                if (isFullScreen) {
+                  document.exitFullscreen();
+                  window.removeEventListener("resize", onResize);
+                } else {
+                  compareHelper.container.requestFullscreen();
+                }
+                window.addEventListener("resize", onResize);
+              },
+            },
+          },
+        ];
+      }
+    </script>
+  </body>
+</html>
+

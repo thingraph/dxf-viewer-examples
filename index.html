@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="./global.css" />
+    <title>x-viewer samples</title>
+    <style type="text/css">
+        /* a {
+            font-size: large;
+            color: #3a6aca;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            transform: scale(1.1);
+        } */
+
+        .header {
+            text-align: center;
+            font-size: 30px;
+            margin-top: 20px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ebeef5;
+        }
+
+        .project-cards {
+            padding: 20px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+        }
+        .project-card {
+            width: 20%;
+            display: inline-block;
+        }
+        .project-card-main {
+            height: 150px;
+            height: 100%;
+            min-width: 150px;
+            background-color: #fff;
+            color: #303133;
+            margin-bottom: 10px;
+
+            border: 1px solid rgba(109, 76, 65, .5);
+            margin: 10px;
+            transition: all .1s;
+            opacity: 0.95;
+            background-color: #f6f6f6;
+        }
+        .project-card-main:hover {
+            cursor: pointer;
+            border: 1px solid rgba(109, 76, 65, 1.0);
+            opacity: 1.0;
+            box-shadow: 3px 5px 10px rgba(109, 76, 65, 0.5);
+        }
+        .project-card-thumbnail {
+            height: 150px;
+            background-image: url(/images/default-thumbnail.jpg);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            background-size: cover;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .3);
+            transition: all .1s;
+        }
+        .project-card-desc {
+            min-height: 40px;
+            text-align: center;
+            font-size: 14px;
+            padding: 2px;
+            line-height: 35px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">dxf-viewer examples</div>
+    <div class="project-cards"></div>
+    <!--
+    <div><a href="./upload_dxf.html">Upload local dxf/pdf</a></div>
+    <br />
+    <div><a href="./dxf_0.html">Dxf example 0</a></div>
+    <div><a href="./dxf_1.html">Dxf example 1</a></div>
+    <div><a href="./dxf_2.html">Dxf example 2</a></div>
+    <div><a href="./dxf_compare_1_viewport.html">Dxf example 3 (compare with 1 viewport)</a></div>
+    <div><a href="./dxf_compare_2_viewports.html">Dxf example 4 (compare with 2 viewports)</a></div>
+    <div><a href="./pdf_1.html">Pdf example 1</a></div>
+    <br />
+    -->
+  </body>
+
+  <script type="module">
+    const projects = [
+      { name: 'Upload local dxf/pdf', thumbnail: './images/upload_dxf.png', link: './upload_dxf.html' },
+      { name: 'Dxf example 0', thumbnail: './images/dxf_0.png', link: './dxf_0.html'},
+      { name: 'Dxf example 1', thumbnail: './images/dxf_1.png', link: './dxf_1.html' },
+      { name: 'Dxf example 2', thumbnail: './images/dxf_2.png', link: './dxf_2.html' },
+      { name: 'Dxf example 3 (compare with 1 viewport)', thumbnail: './images/dxf_compare_1.png', link: './dxf_compare_1_viewport.html' },
+      { name: 'Dxf example 4 (compare with 2 viewports)', thumbnail: './images/dxf_compare_2.png', link: './dxf_compare_2_viewports.html' },
+      { name: 'Pdf example 1', thumbnail: './images/pdf_1.png', link: './pdf_1.html' },
+    ];
+
+    const init = () => {
+      const projectCardsContainer = document.querySelector('.project-cards');
+      projects.forEach(project => {
+        const projectCard = document.createElement('div');
+        projectCard.classList.add('project-card');
+        projectCard.innerHTML = `
+          <div class="project-card-main">
+            <div class="project-card-thumbnail" style="background-image: url('${project.thumbnail}');"></div>
+            <div class="project-card-desc">
+              <div>${project.name}</div>
+            </div>
+          </div>
+        `;
+        projectCardsContainer.appendChild(projectCard);
+        projectCard.onclick = () => {
+          window.location.href = project.link;
+        };
+      });
+    };
+    init();
+  </script>
+</html>

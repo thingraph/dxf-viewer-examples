@@ -1,0 +1,130 @@
+<html>
+
+<head>
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="./global.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
+    <link rel="stylesheet" href="./compare/dxfComparePanel.css" />
+    <link rel="stylesheet" href="./settings/SettingsPanel.css" />
+    <style>
+        #myCanvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="myCanvas"></div>
+    </div>
+    <script type="importmap">
+        {
+            "imports": {
+                "@x-viewer/core": "../libs/x-viewer/core/dist/index.esm.js",
+                "@x-viewer/plugins": "../libs/x-viewer/plugins/dist/index.esm.js",
+                "@x-viewer/ui": "../libs/x-viewer/ui/dist/index.esm.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import {
+            Viewer2d,
+            BaseDxfCompareHelper,
+        } from "@x-viewer/core";
+        import {
+            AxisGizmoPlugin,
+            BottomBarPlugin,
+            Viewer2dToolbarPlugin,
+            LayerManagerPlugin,
+            MarkupPlugin,
+            MeasurementPlugin,
+            ScreenshotPlugin,
+            ToolbarMenuId,
+        } from "@x-viewer/plugins";
+        import DxfComparePanel from "./compare/dxfComparePanel.js"
+        import Viewer2dSettingsPanel from "./settings/Viewer2dSettingsPanel.js";
+
+        const url1 = "./models/dxf/doors_and_windows.dxf";
+        const url2 = "./models/dxf/doors_and_windows_mopdified.dxf";
+        const language = "en"; // "en" or "cn"
+        const config = {
+            containerId: "myCanvas",
+            enableSpinner: true,
+            enableProgressBar: true,
+            enableLayoutBar: true,
+        };
+        const compareHelper = new BaseDxfCompareHelper(config);
+        const fontFiles = ["./libs/fonts/hztxt.shx", "./libs/fonts/simplex.shx"];
+        await compareHelper.setFont(fontFiles);
+
+        window.compareHelper = compareHelper;
+
+        const menuConfig = {
+            [ToolbarMenuId.Settings]: {
+                onActive: () => {
+                    console.log("[Toolbar]", "Activate Settings");
+                    if (!window.settingsPanel) {
+                        window.settingsPanel = new Viewer2dSettingsPanel(compareHelper.viewer);
+                    }
+                    window.settingsPanel.show();
+                },
+                onDeactive: () => {
+                    console.log("[Toolbar]", "Deactivate Settings");
+                    window.settingsPanel.hide();
+                },
+                mutexIds: [
+                    ToolbarMenuId.Measure,
+                    ToolbarMenuId.MeasureDistance,
+                    ToolbarMenuId.MeasureArea,
+                    ToolbarMenuId.MeasureAngle,
+                    ToolbarMenuId.MeasureCoordinate,
+                ],
+            },
+            [ToolbarMenuId.Layers]: {
+                onActive: () => {
+                    console.log("[Toolbar]", "Activate Layers");
+                    if (!window.layerManager) {
+                        window.layerManager = new LayerManagerPlugin(compareHelper.viewer)
+                        window.layerManager.addEventListener("Visibilitychange", (visible) => {
+                            window.toolbar.setActive("Layers", visible);
+                        });
+                    }
+                    window.layerManager.show();
+                },
+                onDeactive: () => {
+                    console.log("[Toolbar]", "Deactivate Layers");
+                    window.layerManager.hide();
+                },
+                mutexIds: [
+                    ToolbarMenuId.Measure,
+                    ToolbarMenuId.MeasureDistance,
+                    ToolbarMenuId.MeasureArea,
+                    ToolbarMenuId.MeasureAngle,
+                    ToolbarMenuId.MeasureCoordinate,
+                ],
+            },
+        };
+
+        new AxisGizmoPlugin(compareHelper.viewer, { ignoreZAxis: true });
+        new ScreenshotPlugin(compareHelper.viewer);
+        new MarkupPlugin(compareHelper.viewer);
+        new MeasurementPlugin(compareHelper.viewer);
+        window.toolbar = new Viewer2dToolbarPlugin(compareHelper.viewer, { menuConfig, language });
+
+        const onProgress = (event) => {
+            const progress = ((event.loaded * 100) / event.total).toFixed(2);
+            console.log(`[Demo] Compare progress: ${progress}%`);
+        };
+        await compareHelper.compare({src: url1, modelId: "dxf_3"}, {src: url2, modelId: "dxf_3_1"}, undefined, onProgress).then(() => {
+            console.log(`[Demo] Compared models: ${url1}, ${url2}`);
+            new DxfComparePanel(compareHelper, compareHelper.container);
+        }).catch((reason) => {
+            console.error(`[Demo] Failed to compare models: ${url1}, ${url2}. reason: ${reason}`);
+        });
+
+    </script>
+</body>
+
+</html>

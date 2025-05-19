@@ -1,0 +1,418 @@
+<html>
+
+<head>
+    <meta
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+      name="viewport"
+    />
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="./global.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
+    <link rel="stylesheet" href="./compare/dxfComparePanel.css" />
+    <link rel="stylesheet" href="./settings/SettingsPanel.css">
+    <style>
+        #myCanvas {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .upload-btn {
+            margin-top: 2em;
+            display: inline-block;
+        }
+
+        .upload-btn button {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+        }
+
+        .upload-btn label {
+            color: #353535;
+            background: gray;
+            border: 0;
+            border-radius: 3px;
+            /*transition: ease 0.2s background-color;*/
+            font-size: 1rem;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+            display: inline-block;
+            overflow: hidden;
+            padding: 0.625rem 1.25rem;
+        }
+
+        .upload-btn label:hover {
+            background: #DDD;
+        }
+
+        .upload-btn svg {
+            width: 1em;
+            height: 1em;
+            vertical-align: middle;
+            fill: currentColor;
+            margin-top: -0.25em;
+            margin-right: 0.25em;
+        }
+
+        .markup-toolbar {
+            position: absolute;
+            right: 5px;
+            top: 10%;
+            background-color: #eee;
+        }
+        .toolbar-item {
+            padding: 2px 0;
+        }
+        .toolbar-item span {
+            text-align: center;
+            display: inline-block;
+            padding: 5px 5px;
+            border-radius: 4px;
+            width: 5em;
+            color: #666666;
+        }
+        .toolbar-item .toolbar-item-active {
+            background-color: #2c7be5;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="myCanvas"></div>
+    </div>
+    <div style="position: absolute; top: 10px; opacity: 0.6; width: 100%;text-align: center;pointer-events: none;">
+        <div class="upload-btn" id="uploadBtn" style="pointer-events: auto;">
+            <button id="uploadModelFile" type="button">Click to upload dxf/pdf file(s)</button>
+            <label for="uploadModelFile" title="Choose one or more dxf/pdf files to load">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+                    <path
+                        d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z">
+                    </path>
+                </svg>
+                <span>Upload dxf/pdf</span>
+            </label>
+        </div>
+        <div style="margin-top: 1em; pointer-events: auto; width: fit-content; left: calc(50% - 200px); position: absolute;">
+            <input id="fileUrlInput" style="display: inline-block; width: 20em; height: 2em;">
+            <button
+                style="width: 8em; height: 2em; color: #fff; opacity: 1; background: #000; cursor: pointer;"
+                id="loadDxf">Load dxf/pdf
+            </button>
+        </div>
+    </div>
+    <script type="importmap">
+        {
+            "imports": {
+                "@x-viewer/core": "../libs/x-viewer/core/dist/index.esm.js",
+                "@x-viewer/plugins": "../libs/x-viewer/plugins/dist/index.esm.js",
+                "@x-viewer/ui": "../libs/x-viewer/ui/dist/index.esm.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import {
+            Viewer2d,
+            ViewerEvent,
+        } from "@x-viewer/core";
+        import {
+            AxisGizmoPlugin,
+            BottomBarPlugin,
+            Viewer2dToolbarPlugin,
+            LayerManagerPlugin,
+            LocalDxfUploader,
+            MarkupPlugin,
+            MarkupType,
+            MeasurementPlugin,
+            ScreenshotPlugin,
+            StatsPlugin,
+            ToolbarMenuId,
+        } from "@x-viewer/plugins";
+        import DxfComparePanel from "./compare/dxfComparePanel.js"
+        import Viewer2dSettingsPanel from './settings/Viewer2dSettingsPanel.js';
+
+        // keep markup data and measurementData
+        const markupData = [];
+        const measurementData = [];
+        let isShowMarkup = true;
+
+        const language = "en"; // "en" or "cn"
+        const viewerCfg = {
+            containerId: "myCanvas",
+            language,
+            enableSpinner: true,
+            enableProgressBar: true,
+            enableLayoutBar: true,
+            enableLocalCache: false,
+        };
+        
+        // fix mobile markup toolbar
+        const isMobile = /mobile/i.test(navigator.userAgent);
+        if (isMobile) {
+            viewerCfg.toolbarMenuConfig[ToolbarMenuId.Markup] = {
+                onClick: (viewer, toolbar) => {
+                    // decative measure
+                    viewer.deactivateMeasurement();
+                    viewer.toolbar?.updateMenu(ToolbarMenuId.Measure, { defaultActive: false });
+                    viewer.deactivateZoomRect();
+                    viewer.toolbar?.setActive(ToolbarMenuId.ZoomToRectangle, false);
+
+                    // show all markup first
+                    const markups = viewer.getMarkups();
+                    markups.forEach((m) => viewer.setMarkupVisibility(m.id, true));
+                    viewer.toolbar?.setActive(ToolbarMenuId.MarkupVisibility, false);
+
+                    viewer.activateMarkup(MarkupType.CloudLineRectangle);
+                    // hide main toolbar
+                    toolbar.hide();
+
+                    // show markup toolbar
+                    createMarkupToolbar();
+                },
+            }
+        }
+
+        const viewer = new Viewer2d(viewerCfg);
+        // const fontFiles = ["libs/fonts/Microsoft_YaHei_Regular.typeface.json"];
+        const fontFiles = ["libs/fonts/simplex.shx", "libs/fonts/hztxt.shx", "libs/fonts/arial.ttf", "libs/fonts/Microsoft_YaHei.ttf"];
+        await viewer.setFont(fontFiles);
+
+        window.viewer = viewer;
+
+        const menuConfig = {
+            [ToolbarMenuId.Settings]: {
+                onActive: () => {
+                    console.log("[Toolbar]", "Activate Settings");
+                    if (!window.settingsPanel) {
+                        window.settingsPanel = new Viewer2dSettingsPanel(window.viewer);
+                    }
+                    window.settingsPanel.show();
+                },
+                onDeactive: () => {
+                    console.log("[Toolbar]", "Deactivate Settings");
+                    if (!window.settingsPanel) {
+                        window.settingsPanel = new Viewer2dSettingsPanel(window.viewer);
+                    }
+                    window.settingsPanel.hide();
+                },
+                mutexIds: [
+                    ToolbarMenuId.Measure,
+                    ToolbarMenuId.MeasureDistance,
+                    ToolbarMenuId.MeasureArea,
+                    ToolbarMenuId.MeasureAngle,
+                    ToolbarMenuId.MeasureCoordinate,
+                ],
+            },
+            [ToolbarMenuId.Layers]: {
+                onActive: () => {
+                    console.log("[Toolbar]", "Activate Layers");
+                    if (!window.layerManager) {
+                        window.layerManager = new LayerManagerPlugin(window.viewer);
+                    }
+                    window.layerManager.show();
+                },
+                onDeactive: () => {
+                    console.log("[Toolbar]", "Deactivate Layers");
+                    window.layerManager.hide();
+                },
+                mutexIds: [
+                    ToolbarMenuId.Measure,
+                    ToolbarMenuId.MeasureDistance,
+                    ToolbarMenuId.MeasureArea,
+                    ToolbarMenuId.MeasureAngle,
+                    ToolbarMenuId.MeasureCoordinate,
+                ],
+            },
+        };
+
+        new AxisGizmoPlugin(viewer, { ignoreZAxis: true });
+        new BottomBarPlugin(viewer);
+        new MarkupPlugin(viewer);
+        new MeasurementPlugin(viewer, { language });
+        new ScreenshotPlugin(viewer);
+        new StatsPlugin(viewer);
+        window.toolbar = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
+
+        const modelUploader = new LocalDxfUploader(viewer);
+        const pdfWorker = "libs/pdf/pdf.worker.min.js";
+        modelUploader.setPdfWorker(pdfWorker);
+        modelUploader.onSuccess = (event) => {
+            if (event && event.compare) {
+                !viewer.dxfComparePanel && (viewer.dxfComparePanel = new DxfComparePanel(viewer));
+            }
+            const pdfLoaderPlugin =  viewer.findPlugin('PdfLoaderPlugin');
+            if (pdfLoaderPlugin) {
+                const pageCount = pdfLoaderPlugin.getPageCount()
+                createPdfPageDropdown(pageCount, pdfLoaderPlugin);
+            }
+        }
+        document.getElementById("uploadModelFile").onclick = function () {
+            modelUploader.openFileBrowserToUpload();
+        }
+        document.getElementById("loadDxf").onclick = function () {
+            const url = document.getElementById("fileUrlInput").value;
+            if (url) {
+                viewer.loadModel({ src: url, merge: true }).then(() => {
+                    console.log(`[Demo] Loaded model ${url}`);
+                })
+            }
+        }
+
+        viewer.addEventListener(ViewerEvent.LayoutChange, () => {
+            const layoutName = viewer.getActiveLayoutName();
+            viewer.setMarkups(markupData.filter(markup => markup.layoutName === layoutName));
+            viewer.setMeasurements(measurementData.filter(measure => measure.layoutName === layoutName));
+        });
+
+        viewer.addEventListener(ViewerEvent.MarkupAdd, (data) => {
+            console.log("MarkupAdded", data);
+            const layoutName = viewer.getActiveLayoutName();
+            // Markup and layout correlation
+            data.layoutName = layoutName;
+            const index = markupData.findIndex(markup => markup.id === data.id);
+            if (index > -1) {
+                markupData.splice(index, 1, data);
+            } else {
+                markupData.push(data);
+            }
+        })
+        viewer.addEventListener(ViewerEvent.MarkupUpdate, (data) => {
+            const {oldData, newData} = data;
+            console.log("MarkupUpdated", oldData, newData);
+            const layoutName = viewer.getActiveLayoutName();
+            newData.layoutName = layoutName;
+            const index = markupData.findIndex(markup => markup.id === newData.id);
+            markupData.splice(index, 1, newData);
+        })
+        viewer.addEventListener(ViewerEvent.MarkupRemove, (data) => {
+            console.log("MarkupRemoved", data);
+            const index = markupData.findIndex(markup => markup.id === data.id);
+            markupData.splice(index, 1);
+        })
+
+        viewer.addEventListener(ViewerEvent.MeasurementAdd, (data) => {
+            console.log("MeasurementAdded", data);
+            const layoutName = viewer.getActiveLayoutName();
+            // Measurement and layout correlation
+            data.layoutName = layoutName;
+            const index = measurementData.findIndex(measurement => measurement.id === data.id);
+            if (index > -1) {
+                measurementData.splice(index, 1, data);
+            } else {
+                measurementData.push(data);
+            }
+        })
+        viewer.addEventListener(ViewerEvent.MeasurementRemove, (data) => {
+            console.log("MeasurementRemoved", data);
+            const index = measurementData.findIndex(measurement => measurement.id === data.id);
+            measurementData.splice(index, 1);
+        })
+
+        // markup toolbar for mobile demo
+        function createMarkupToolbar() {
+            if (document.getElementById("markup-toolbar")) {
+                document.getElementById("markup-toolbar").remove();
+            }
+            const markupContainer = document.createElement("div");
+            markupContainer.id = "markup-toolbar";
+            markupContainer.classList.add("markup-toolbar");
+            const type2Name = {
+                [MarkupType.Arrow]: "箭头",
+                [MarkupType.Rectangle]: "矩形框",
+                [MarkupType.CloudLineRectangle]: "云线框",
+                [MarkupType.PolyLine]: "多段线",
+                [MarkupType.Ellipse]: "椭圆",
+                [MarkupType.Circle]: "圆",
+                [MarkupType.Text]: "文字",
+                ["ClearMarkup"]: "清除批注",
+                ["QuitMarkup"]: "退出批注",
+            };
+            let lastTarget;
+            [MarkupType.Arrow, MarkupType.Rectangle, MarkupType.CloudLineRectangle, MarkupType.PolyLine, MarkupType.Ellipse, MarkupType.Circle, MarkupType.Text, "ClearMarkup", "QuitMarkup"].forEach(type => {
+                const item = document.createElement("div");
+                item.classList.add("toolbar-item");
+                const btn = document.createElement("span");
+                btn.dataset.type = type;
+                btn.innerText = type2Name[type];
+                if (type === MarkupType.CloudLineRectangle) {
+                    btn.classList.add("toolbar-item-active");
+                    lastTarget = btn;
+                }
+                item.appendChild(btn);
+                markupContainer.appendChild(item);
+            })
+            markupContainer.addEventListener("touchend", (e) => {
+                if (e.target.dataset.type === "ClearMarkup") {
+                    viewer.clearMarkups();
+                    return;
+                } else if (e.target.dataset.type === "QuitMarkup") {
+                    viewer.deactivateMarkup();
+                    markupContainer.style.display = "none";
+                    viewer.toolbar.show();
+                    return;
+                }
+                if (lastTarget) {
+                    lastTarget.classList.remove("toolbar-item-active");
+                }
+                if (e.target instanceof HTMLSpanElement) {
+                    e.target.classList.add("toolbar-item-active");
+                }
+                lastTarget = e.target;
+                viewer.activateMarkup(e.target.dataset.type);
+            })
+            document.body.appendChild(markupContainer);
+        }
+
+        // for mobile cancel measureing and markup
+        let exitButton;
+        viewer.addEventListener(ViewerEvent.MeasurementActivate, (data) => {
+            if (isMobile) {
+                if (!exitButton) {
+                    exitButton = createMobileExitButton();
+                }
+                exitButton.style.display = "inline-block";
+            }
+        })
+
+        viewer.addEventListener(ViewerEvent.MeasurementDeactivate, (data) => {
+            if (exitButton) {
+                exitButton.style.display = "none";
+            }
+        })
+
+        function createMobileExitButton() {
+            const button = document.createElement("button");
+            button.innerText = "X";
+            button.style.cssText = `position: absolute;right: 5%; top: 5%;background-color: #000000;color: #ffffff;padding: 3px 10px;font-weight: bolder;`;
+            viewer.widgetContainer.appendChild(button);
+            button.style.display = "none";
+            button.addEventListener("touchstart", () => {
+                viewer.cancelMeasurement();
+            });
+            return button;
+        }
+
+        // For pdf page
+        function createPdfPageDropdown(pageCount, pdfLoaderPlugin) {
+            const div = document.createElement("div");
+            div.style.cssText = "position: absolute; right: 5%; top: 15%; color: #eee; font-size: 20px;";
+            let htmlStr = `<label>Select pdf page:</label>
+                            <select id="selectPage">`;
+            for (let i = 0; i < pageCount; i++) {
+                htmlStr += `<option value="${i + 1}">${i + 1}</option>`;
+            }
+            htmlStr += '</select>';
+            div.innerHTML = htmlStr;
+            document.body.appendChild(div);
+            document.getElementById("selectPage").addEventListener("change", (e) => {
+                pdfLoaderPlugin.loadPage(Number(e.target.value));
+            })
+        }
+    </script>
+</body>
+
+</html>
