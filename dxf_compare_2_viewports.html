@@ -59,7 +59,6 @@
     <script type="importmap">
       {
           "imports": {
-            "@x-viewer/x-viewer": "../libs/x-viewer/x-viewer/dist/index.esm.js",
             "@x-viewer/core": "../libs/x-viewer/core/dist/index.esm.js",
             "@x-viewer/plugins": "../libs/x-viewer/plugins/dist/index.esm.js",
             "@x-viewer/ui": "../libs/x-viewer/ui/dist/index.esm.js"
@@ -67,15 +66,18 @@
       }
     </script>
     <script type="module">
-      import {
-        AxisGizmoPlugin,
-        BottomBarPlugin,
-        DxfCompareHelper,
-        LayerManagerPlugin,
-        ScreenshotPlugin,
-        MeasurementPlugin,
-        ToolbarMenuId,
-      } from "@x-viewer/x-viewer";
+        import {
+          DxfCompareHelper,
+        } from "@x-viewer/core";
+        import {
+            AxisGizmoPlugin,
+            BottomBarPlugin,
+            Viewer2dToolbarPlugin,
+            LayerManagerPlugin,
+            MeasurementPlugin,
+            ScreenshotPlugin,
+            ToolbarMenuId,
+        } from "@x-viewer/plugins";
       import DxfComparePanel from "./compare/dxfComparePanel.js";
       import Viewer2dSettingsPanel from "./settings/Viewer2dSettingsPanel.js";
 

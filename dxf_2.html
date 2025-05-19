@@ -22,7 +22,6 @@
     <script type="importmap">
         {
             "imports": {
-                "@x-viewer/x-viewer": "../libs/x-viewer/x-viewer/dist/index.esm.js",
                 "@x-viewer/core": "../libs/x-viewer/core/dist/index.esm.js",
                 "@x-viewer/plugins": "../libs/x-viewer/plugins/dist/index.esm.js",
                 "@x-viewer/ui": "../libs/x-viewer/ui/dist/index.esm.js"
@@ -31,17 +30,20 @@
     </script>
     <script type="module">
         import {
+            Viewer2d,
+        } from "@x-viewer/core";
+        import {
             AxisGizmoPlugin,
             BottomBarPlugin,
-            Viewer2d,
             Viewer2dToolbarPlugin,
+            HotpointPlugin,
             LayerManagerPlugin,
             MarkupPlugin,
             MeasurementPlugin,
             ScreenshotPlugin,
             StatsPlugin,
             ToolbarMenuId,
-        } from "@x-viewer/x-viewer";
+        } from "@x-viewer/plugins";
         import Viewer2dSettingsPanel from './settings/Viewer2dSettingsPanel.js';
 
         const models = [{
