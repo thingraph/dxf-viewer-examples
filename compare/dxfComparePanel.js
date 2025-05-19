@@ -42,11 +42,11 @@ export default class DxfComparePanel {
         const modifiedChanageValues = changesValues.filter((val) => val.type === "Modified");
 
         if (addedChangesValues.length > 0) {
-            this.buildList(addedChangesValues, "New");
+            this.buildList(addedChangesValues, "Added");
         }
 
         if (deletedChangeValues.length > 0) {
-            this.buildList(deletedChangeValues, "Deleted");
+            this.buildList(deletedChangeValues, "Removed");
         }
 
         if (modifiedChanageValues.length > 0) {
