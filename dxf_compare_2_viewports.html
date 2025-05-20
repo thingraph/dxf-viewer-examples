@@ -5,7 +5,6 @@
     <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
     <link rel="stylesheet" href="./compare/dxfComparePanel.css" />
-    <link rel="stylesheet" href="./settings/SettingsPanel.css" />
     <style>
       body {
         font-size: 0;
@@ -76,10 +75,10 @@
             LayerManagerPlugin,
             MeasurementPlugin,
             ScreenshotPlugin,
+            Settings2dPlugin,
             ToolbarMenuId,
         } from "@x-viewer/plugins";
       import DxfComparePanel from "./compare/dxfComparePanel.js";
-      import Viewer2dSettingsPanel from "./settings/Viewer2dSettingsPanel.js";
 
       const url1 = "./models/dxf/doors_and_windows.dxf";
       const url2 = "./models/dxf/doors_and_windows_mopdified.dxf";
@@ -143,15 +142,12 @@
               onActive: () => {
                 console.log("[Toolbar]", "Activate Settings");
                 if (!viewer.settingsPanel) {
-                  viewer.settingsPanel = new Viewer2dSettingsPanel(viewer);
+                  viewer.settingsPanel = new Settings2dPlugin(viewer);
                 }
                 viewer.settingsPanel.show();
               },
               onDeactive: () => {
                 console.log("[Toolbar]", "Deactivate Settings");
-                if (!viewer.settingsPanel) {
-                  viewer.settingsPanel = new Viewer2dSettingsPanel(viewer);
-                }
                 viewer.settingsPanel.hide();
               },
             },

@@ -10,7 +10,6 @@
     <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
     <link rel="stylesheet" href="./compare/dxfComparePanel.css" />
-    <link rel="stylesheet" href="./settings/SettingsPanel.css">
     <style>
         #myCanvas {
             width: 100%;
@@ -129,11 +128,11 @@
             MarkupType,
             MeasurementPlugin,
             ScreenshotPlugin,
+            Settings2dPlugin,
             StatsPlugin,
             ToolbarMenuId,
         } from "@x-viewer/plugins";
         import DxfComparePanel from "./compare/dxfComparePanel.js"
-        import Viewer2dSettingsPanel from './settings/Viewer2dSettingsPanel.js';
 
         // keep markup data and measurementData
         const markupData = [];
@@ -188,15 +187,12 @@
                 onActive: () => {
                     console.log("[Toolbar]", "Activate Settings");
                     if (!window.settingsPanel) {
-                        window.settingsPanel = new Viewer2dSettingsPanel(window.viewer);
+                        window.settingsPanel = new Settings2dPlugin(window.viewer, { language });
                     }
                     window.settingsPanel.show();
                 },
                 onDeactive: () => {
                     console.log("[Toolbar]", "Deactivate Settings");
-                    if (!window.settingsPanel) {
-                        window.settingsPanel = new Viewer2dSettingsPanel(window.viewer);
-                    }
                     window.settingsPanel.hide();
                 },
                 mutexIds: [
