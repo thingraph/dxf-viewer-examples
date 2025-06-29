@@ -65,3 +65,17 @@ viewer.goToHomeView();
 - It doesn't support Tangent CAD, need to export to T3 format first.
 - It supports dxf version "AutoCAD 2018", other versions are not well tested.
 
+
+## Licensing
+
+### Personal Usage
+- **Free**: The software is available for free for personal, non-commercial use. This includes use by individuals for their own projects, hobbies, or learning purposes.
+
+### Commercial Usage
+- **$1,000**: For commercial use, where the software is used in a business context to generate revenue or for professional purposes. This includes use by companies, organizations, or individuals in a commercial setting.
+
+### Source Code Access
+- **$15,000**: For access to the full source code of the software. This option is for users who need to modify the source code for their specific needs, integrate it into their own products, or require the source code for other reasons.
+
+### Contact Us
+- For any inquiries or support, please contact us at [thingraph@outlook.com](mailto:thingraph@outlook.com).
