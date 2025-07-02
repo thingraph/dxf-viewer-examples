@@ -9,42 +9,47 @@
     <link rel="stylesheet" type="text/css" href="./global.css" />
     <title>x-viewer samples</title>
     <style type="text/css">
-        /* a {
-            font-size: large;
-            color: #3a6aca;
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+            background: #f8f9fb;
+            margin: 0;
+            padding: 0 0 0 0;
+            color: #222;
+            font-size: 16px;
         }
-
-        a:hover {
-            text-decoration: underline;
-            transform: scale(1.1);
-        } */
-
         .header {
             text-align: center;
-            font-size: 30px;
-            margin-top: 20px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #ebeef5;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding: 36px 0 18px 0;
+            background: linear-gradient(90deg, #f6f6f6 60%, #e9e4e0 100%);
+            border-bottom: 1.5px solid #ebeef5;
+            box-shadow: 0 2px 8px 0 rgba(109, 76, 65, 0.04);
+            letter-spacing: 1px;
         }
-
         .project-cards {
-            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            padding: 10px;
             box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
         }
         .project-card {
-            width: 20%;
+            width: 100%;
             display: inline-block;
         }
         .project-card-main {
-            height: 150px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             height: 100%;
             min-width: 150px;
             background-color: #fff;
             color: #303133;
             margin-bottom: 10px;
-
             border: 1px solid rgba(109, 76, 65, .5);
-            margin: 10px;
+            margin: 1px;
             transition: all .1s;
             opacity: 0.95;
             background-color: #f6f6f6;
@@ -57,15 +62,22 @@
         }
         .project-card-thumbnail {
             height: 150px;
-            background-image: url(/images/default-thumbnail.jpg);
+            flex-shrink: 0;
             background-repeat: no-repeat;
             background-position: 50%;
             background-size: cover;
             box-shadow: 0 0 1px rgba(0, 0, 0, .3);
-            transition: all .1s;
+            transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        .project-card-main:hover .project-card-thumbnail {
+            transform: scale(1.1);
         }
         .project-card-desc {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             min-height: 40px;
+            background: #f6f6f6;
             text-align: center;
             font-size: 14px;
             padding: 2px;
@@ -74,6 +86,47 @@
             overflow: hidden;
             text-overflow: ellipsis;
             width: 100%;
+            z-index: 1;
+            position: relative;
+        }
+        .project-card-desc-text {
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .footer {
+            width: 100%;
+            background: #f6f6f6;
+            color: #333;
+            padding: 20px 0 10px 0;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 16px;
+            border-top: 1px solid #ebeef5;
+            box-shadow: 0 -1px 6px 0 rgba(109, 76, 65, 0.05);
+        }
+        .footer-content a {
+            color: #3a6aca;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .footer-content a:hover {
+            color: #6d4c41;
+            text-decoration: underline;
+        }
+        .footer-content .footer-link {
+            color: #3a6aca;
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 4px;
+            transition: color 0.2s;
+        }
+        .footer-content .footer-link:hover {
+            color: #6d4c41;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -92,6 +145,13 @@
     <div><a href="./pdf_1.html">Pdf example 1</a></div>
     <br />
     -->
+    <footer class="footer">
+      <div class="footer-content">
+        Contact: <a href="mailto:thingraph@outlook.com">thingraph@outlook.com</a>
+        &nbsp;|&nbsp;
+        <a class="footer-link" href="https://github.com/thingraph/dxf-viewer-examples" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </footer>
   </body>
 
   <script type="module">
@@ -114,7 +174,7 @@
           <div class="project-card-main">
             <div class="project-card-thumbnail" style="background-image: url('${project.thumbnail}');"></div>
             <div class="project-card-desc">
-              <div>${project.name}</div>
+              <span class="project-card-desc-text" title="${project.name}">${project.name}</span>
             </div>
           </div>
         `;
