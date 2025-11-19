@@ -9,7 +9,6 @@
     <link rel="stylesheet" type="text/css" href="./global.css" />
     <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
-    <link rel="stylesheet" href="./compare/dxfComparePanel.css" />
     <style>
         #myCanvas {
             width: 100%;
@@ -30,7 +29,7 @@
         .upload-btn label {
             color: #353535;
             background: gray;
-            border: 0;
+            border: 1px solid #353535;
             border-radius: 3px;
             /*transition: ease 0.2s background-color;*/
             font-size: 1rem;
@@ -97,7 +96,7 @@
             </label>
         </div>
         <div style="margin-top: 1em; pointer-events: auto; width: fit-content; left: calc(50% - 200px); position: absolute;">
-            <input id="fileUrlInput" style="display: inline-block; width: 20em; height: 2em;">
+            <input id="fileUrlInput" style="display: inline-block; width: 20em; height: 2em; border: 1px solid gray; padding: 0 5px;">
             <button
                 style="width: 8em; height: 2em; color: #fff; opacity: 1; background: #000; cursor: pointer;"
                 id="loadDxf">Load dxf/pdf
@@ -132,7 +131,6 @@
             StatsPlugin,
             ToolbarMenuId,
         } from "@x-viewer/plugins";
-        import DxfComparePanel from "./compare/dxfComparePanel.js"
 
         // keep markup data and measurementData
         const markupData = [];
@@ -183,37 +181,24 @@
         window.viewer = viewer;
 
         const menuConfig = {
-            [ToolbarMenuId.Settings]: {
-                onActive: () => {
-                    console.log("[Toolbar]", "Activate Settings");
-                    if (!window.settingsPanel) {
-                        window.settingsPanel = new Settings2dPlugin(window.viewer, { language });
-                    }
-                    window.settingsPanel.show();
-                },
-                onDeactive: () => {
-                    console.log("[Toolbar]", "Deactivate Settings");
-                    window.settingsPanel.hide();
-                },
-                mutexIds: [
-                    ToolbarMenuId.Measure,
-                    ToolbarMenuId.MeasureDistance,
-                    ToolbarMenuId.MeasureArea,
-                    ToolbarMenuId.MeasureAngle,
-                    ToolbarMenuId.MeasureCoordinate,
-                ],
-            },
             [ToolbarMenuId.Layers]: {
                 onActive: () => {
                     console.log("[Toolbar]", "Activate Layers");
                     if (!window.layerManager) {
                         window.layerManager = new LayerManagerPlugin(window.viewer);
+                        window.layerManager.addEventListener("visibilitychange", (visible) => {
+                            const isActive = toolbarPlugin.isActive(ToolbarMenuId.Layers);
+                            // do this check to avoid recursive call
+                            if (isActive !== visible) {
+                                toolbarPlugin.setActive(ToolbarMenuId.Layers, visible);
+                            }
+                        });
                     }
-                    window.layerManager.show();
+                    window.layerManager.setVisible(true);
                 },
                 onDeactive: () => {
                     console.log("[Toolbar]", "Deactivate Layers");
-                    window.layerManager.hide();
+                    window.layerManager.setVisible(false);
                 },
                 mutexIds: [
                     ToolbarMenuId.Measure,
@@ -230,16 +215,14 @@
         new MarkupPlugin(viewer);
         new MeasurementPlugin(viewer, { language });
         new ScreenshotPlugin(viewer);
+        new Settings2dPlugin(viewer, { language, visible: false });
         new StatsPlugin(viewer);
-        window.toolbar = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
+        window.toolbarPlugin = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
 
         const modelUploader = new LocalDxfUploader(viewer);
         const pdfWorker = "libs/pdf/pdf.worker.min.js";
         modelUploader.setPdfWorker(pdfWorker);
         modelUploader.onSuccess = (event) => {
-            if (event && event.compare) {
-                !viewer.dxfComparePanel && (viewer.dxfComparePanel = new DxfComparePanel(viewer));
-            }
             const pdfLoaderPlugin =  viewer.findPlugin('PdfLoaderPlugin');
             if (pdfLoaderPlugin) {
                 const pageCount = pdfLoaderPlugin.getPageCount()
@@ -317,15 +300,15 @@
             markupContainer.id = "markup-toolbar";
             markupContainer.classList.add("markup-toolbar");
             const type2Name = {
-                [MarkupType.Arrow]: "箭头",
-                [MarkupType.Rectangle]: "矩形框",
-                [MarkupType.CloudLineRectangle]: "云线框",
-                [MarkupType.PolyLine]: "多段线",
-                [MarkupType.Ellipse]: "椭圆",
-                [MarkupType.Circle]: "圆",
-                [MarkupType.Text]: "文字",
-                ["ClearMarkup"]: "清除批注",
-                ["QuitMarkup"]: "退出批注",
+                [MarkupType.Arrow]: "Arrow",
+                [MarkupType.Rectangle]: "Rectangle",
+                [MarkupType.CloudLineRectangle]: "Cloud Line Rectangle",
+                [MarkupType.PolyLine]: "PolyLine",
+                [MarkupType.Ellipse]: "Ellipse",
+                [MarkupType.Circle]: "Circle",
+                [MarkupType.Text]: "Text",
+                ["ClearMarkup"]: "Clear Markups",
+                ["QuitMarkup"]: "Quit",
             };
             let lastTarget;
             [MarkupType.Arrow, MarkupType.Rectangle, MarkupType.CloudLineRectangle, MarkupType.PolyLine, MarkupType.Ellipse, MarkupType.Circle, MarkupType.Text, "ClearMarkup", "QuitMarkup"].forEach(type => {
