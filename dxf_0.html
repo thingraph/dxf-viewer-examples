@@ -8,7 +8,7 @@
         minimum-scale=1.0,
         maximum-scale=1.0,
         user-scalable=no">
-    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="./favicon.ico">
     <link rel="stylesheet" type="text/css" href="./global.css">
     <link rel="stylesheet" type="text/css" href="./iconfont/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="./iconfont/iconfont2.css" />
@@ -132,13 +132,13 @@
             src: "./models/dxf/dxf_0.dxf",
             merge: true,
             visible: true,
-        }, /*{
+        }, {
             modelId: "dxf_0_1",
             name: "dxf_0_1",
             src: "./models/dxf/dxf_0_1.dxf",
             merge: true,
             visible: true,
-        }*/];
+        }];
         const language = "en"; // "en" or "cn"
         const viewerCfg = {
             containerId: "myCanvas",
@@ -156,40 +156,24 @@
         window.viewer = viewer;
 
         const menuConfig = {
-            [ToolbarMenuId.Settings]: {
-                onActive: () => {
-                    console.log("[Toolbar]", "Activate Settings");
-                    if (!window.settingsPanel) {
-                        window.settingsPanel = new Settings2dPlugin(window.viewer, { language });
-                    }
-                    window.settingsPanel.show();
-                },
-                onDeactive: () => {
-                    console.log("[Toolbar]", "Deactivate Settings");
-                    window.settingsPanel.hide();
-                },
-                mutexIds: [
-                    ToolbarMenuId.Measure,
-                    ToolbarMenuId.MeasureDistance,
-                    ToolbarMenuId.MeasureArea,
-                    ToolbarMenuId.MeasureAngle,
-                    ToolbarMenuId.MeasureCoordinate,
-                ],
-            },
             [ToolbarMenuId.Layers]: {
                 onActive: () => {
                     console.log("[Toolbar]", "Activate Layers");
                     if (!window.layerManager) {
-                        window.layerManager = new LayerManagerPlugin(window.viewer)
-                        window.layerManager.addEventListener("Visibilitychange", (visible) => {
-                            window.toolbar.setActive("Layers", visible);
+                        window.layerManager = new LayerManagerPlugin(window.viewer);
+                        window.layerManager.addEventListener("visibilitychange", (visible) => {
+                            const isActive = toolbarPlugin.isActive(ToolbarMenuId.Layers);
+                            // do this check to avoid recursive call
+                            if (isActive !== visible) {
+                                toolbarPlugin.setActive(ToolbarMenuId.Layers, visible);
+                            }
                         });
                     }
-                    window.layerManager.show();
+                    window.layerManager.setVisible(true);
                 },
                 onDeactive: () => {
                     console.log("[Toolbar]", "Deactivate Layers");
-                    window.layerManager.hide();
+                    window.layerManager.setVisible(false);
                 },
                 mutexIds: [
                     ToolbarMenuId.Measure,
@@ -205,9 +189,10 @@
         const markupPlugin = new MarkupPlugin(viewer);
         const measurementPlugin = new MeasurementPlugin(viewer, { language });
         new ScreenshotPlugin(viewer);
+        new Settings2dPlugin(viewer, { language, visible: false });
         new StatsPlugin(viewer);
         const hotpointPlugin = new HotpointPlugin(viewer);
-        window.toolbar = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
+        window.toolbarPlugin = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
 
         let counter = 0; // to indicate how many models are loading
         models.forEach((modelCfg) => {
