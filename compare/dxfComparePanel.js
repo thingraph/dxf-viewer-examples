@@ -35,22 +35,22 @@ export default class DxfComparePanel {
         }
         const changesValues = Object.values(changes);
 
-        header.innerHTML = `差异列表(${changesValues.length})`;
+        header.innerHTML = `Changes(${changesValues.length})`;
 
         const addedChangesValues = changesValues.filter((val) => val.type === "Added");
         const deletedChangeValues = changesValues.filter((val) => val.type === "Removed");
         const modifiedChanageValues = changesValues.filter((val) => val.type === "Modified");
 
         if (addedChangesValues.length > 0) {
-            this.buildList(addedChangesValues, "新增");
+            this.buildList(addedChangesValues, "Added");
         }
 
         if (deletedChangeValues.length > 0) {
-            this.buildList(deletedChangeValues, "删除");
+            this.buildList(deletedChangeValues, "Removed");
         }
 
         if (modifiedChanageValues.length > 0) {
-            this.buildList(modifiedChanageValues, "修改");
+            this.buildList(modifiedChanageValues, "Modified");
         }
     }
 
