@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dwg Database JSON Viewer</title>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/jsoneditor@10.2.0/dist/jsoneditor.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/jsoneditor@10.2.0/dist/jsoneditor.min.css" rel="stylesheet"> -->
+    <script src="libs/jsoneditor/jsoneditor.min.js"></script>
+    <link href="libs/jsoneditor/jsoneditor.min.css" rel="stylesheet">
+    <style>
+        #dwgInfo:empty {
+            height: 10px;
+        }
+      
+        #dwgInfo {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .table {
+            width: 100%;
+            table-layout: fixed;
+        }
+        .table td {
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dwg/dxf Database JSON Viewer</h1>
+    <input type="file" id="fileInput" accept=".dwg,.dxf" />
+    <div id="dwgInfo"></div>
+    <table class="table">
+        <tr>
+            <td>Database from libredwg-web</td>
+            <td>Database in x-viewer</td>
+        </tr>
+        <tr>
+            <td><div id="dwgJsonEditor"></div></td>
+            <td><div id="dxfJsonEditor"></div></td>
+        </tr>
+    </table>
+    <br>
+    <div><a href="https://mlightcad.github.io/libredwg-web/1_dwg_json_viewer.html" style="color: #aaa; font-size: 8px;">mlightcad dwg json viewer</a></div>
+    <!-- <script type="module" src="dist/libredwg-web.js" defer></script> -->
+    <script type="importmap">
+        {
+            "imports": {
+                "@x-viewer/core": "https://cdn.jsdelivr.net/npm/@x-viewer/core@latest/dist/index.esm.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import { DxfParser } from "@x-viewer/core";
+
+        // const loader = new DxfLoader();
+        // const parser = new DxfParser();
+
+        const printDwgInfo = (version, codepage, stats) => {
+            const infoElement = document.getElementById('dwgInfo');
+            infoElement.innerHTML = '';
+            infoElement.textContent = `Version: ${version}, Code Page: ${codepage}, Unknown Entities: ${stats.unknownEntityCount}`;
+        }
+
+        // create the editor
+        const dwgContainer = document.getElementById('dwgJsonEditor')
+        const dxfContainer = document.getElementById('dxfJsonEditor')
+        const options = {
+            mode: 'view'
+        }
+        const dwgJsonEditor = new JSONEditor(dwgContainer, options)
+        const dxfJsonEditor = new JSONEditor(dxfContainer, options)
+
+        // handle file input change event
+        const fileInput = document.getElementById('fileInput')
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0]
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileContent = e.target.result;
+                    let version;
+                    let codepage;
+                    let stats = { unknownEntityCount: "" };
+                    const parser = new DxfParser();
+                    if (file.name.endsWith(".dwg")) {
+                        const result = parser.libredwgConvertEx(fileContent);
+                        dwgJsonEditor.set(result.database);
+                        version = result.version;
+                        codepage = result.codepage;
+                        stats = result.stats;
+                    }
+                    const result = parser.parse(fileContent);
+                    dxfJsonEditor.set({
+                        tables: result.tables,
+                        objects: result.objects,
+                        header: result.header,
+                        entities: result.entities,
+                        classes: result.classes,
+                        blocks: result.blocks,
+                    });
+                    version = version || result.header["$ACADVER"];
+                    codepage = result.header["$DWGCODEPAGE"];
+                    printDwgInfo(version, codepage, stats);
+                }
+
+                dwgJsonEditor.clear();
+                dxfJsonEditor.clear();
+                // read the file
+                reader.readAsArrayBuffer(file)
+            } else {
+                console.log('No file selected')
+            }
+        })
+    </script>
+</body>
+</html>
