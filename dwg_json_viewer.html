@@ -4,16 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dwg Database JSON Viewer</title>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/jsoneditor@10.2.0/dist/jsoneditor.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/jsoneditor@10.2.0/dist/jsoneditor.min.css" rel="stylesheet"> -->
-    <script src="libs/jsoneditor/jsoneditor.min.js"></script>
-    <link href="libs/jsoneditor/jsoneditor.min.css" rel="stylesheet">
     <style>
-        #dwgInfo:empty {
+        #dwgInfo:empty, #dxfInfo:empty {
             height: 10px;
         }
       
-        #dwgInfo {
+        #dwgInfo, #dxfInfo {
             margin-top: 10px;
             margin-bottom: 10px;
         }
@@ -24,37 +20,98 @@
         .table td {
             vertical-align: top;
         }
+        .btn {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h1>Dwg/dxf Database JSON Viewer</h1>
-    <input type="file" id="fileInput" accept=".dwg,.dxf" />
-    <div id="dwgInfo"></div>
     <table class="table">
         <tr>
-            <td>Database from libredwg-web</td>
-            <td>Database in x-viewer</td>
+            <td>
+                <label for="fileInput" class="btn">Choose Dwg File</label>
+                <input type="file" id="fileInput" accept=".dwg" style="display: none;" />
+                <span id="dwgFileName">No File Chosen</span>
+                <div id="dwgInfo"></div>
+            </td>
+            <td></td>
+            <td>
+                <label for="fileInputDxf" class="btn">Choose Dxf File</label>
+                <input type="file" id="fileInputDxf" accept=".dxf" style="display: none;" />
+                <span id="dxfFileName">No File Chosen</span>
+                <div id="dxfInfo"></div>
+            </td>
         </tr>
         <tr>
-            <td><div id="dwgJsonEditor"></div></td>
-            <td><div id="dxfJsonEditor"></div></td>
+            <td>Database from libredwg-web</td>
+            <td>Database in x-viewer parsed by libredwg-web</td>
+            <td>Database in x-viewer parsed by x-viewer/core <span id="coreVersion"></span></td>
+        </tr>
+        <tr>
+            <td><div id="jsonEditor1"></div></td>
+            <td><div id="jsonEditor2"></div></td>
+            <td><div id="jsonEditor3"></div></td>
         </tr>
     </table>
     <br>
     <div><a href="https://mlightcad.github.io/libredwg-web/1_dwg_json_viewer.html" style="color: #aaa; font-size: 8px;">mlightcad dwg json viewer</a></div>
     <!-- <script type="module" src="dist/libredwg-web.js" defer></script> -->
-    <script type="importmap">
-        {
-            "imports": {
-                "@x-viewer/core": "https://cdn.jsdelivr.net/npm/@x-viewer/core@latest/dist/index.esm.js"
-            }
-        }
+    <script>
+        // Auto-detect environment and load resources accordingly
+        (function() {
+            // Check if running locally (localhost, 127.0.0.1, or file:// protocol)
+            const wl = window.location;
+            const isDevEnv = wl.hostname === 'localhost' || wl.hostname === '127.0.0.1';
+
+            // Load jsoneditor based on environment
+            const jsoneditorJsPath = isDevEnv
+                ? "libs/jsoneditor/jsoneditor.min.js"
+                : "https://cdn.jsdelivr.net/npm/jsoneditor@10.2.0/dist/jsoneditor.min.js";
+            
+            const jsoneditorCssPath = isDevEnv
+                ? "libs/jsoneditor/jsoneditor.min.css"
+                : "https://cdn.jsdelivr.net/npm/jsoneditor@10.2.0/dist/jsoneditor.min.css";
+
+            // Load CSS
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = jsoneditorCssPath;
+            document.head.appendChild(link);
+
+            // Load JS
+            const script = document.createElement('script');
+            script.src = jsoneditorJsPath;
+            document.head.appendChild(script);
+
+            // Set import map for x-viewer/core
+            const corePath = isDevEnv 
+                ? "../packages/core/dist/index.esm.js"
+                : "https://cdn.jsdelivr.net/npm/@x-viewer/core@latest/dist/index.esm.js";
+
+            const importMap = document.createElement('script');
+            importMap.type = 'importmap';
+            importMap.textContent = JSON.stringify({
+                imports: {
+                    "@x-viewer/core": corePath
+                }
+            });
+            document.head.appendChild(importMap);
+        })();
     </script>
     <script type="module">
-        import { DxfParser } from "@x-viewer/core";
+        import { DxfParser, VERSION } from "@x-viewer/core";
 
-        // const loader = new DxfLoader();
-        // const parser = new DxfParser();
+        // Display x-viewer/core version
+        const coreVersionElement = document.getElementById('coreVersion');
+        if (coreVersionElement && VERSION) {
+            coreVersionElement.textContent = `(v${VERSION})`;
+        }
 
         const printDwgInfo = (version, codepage, stats) => {
             const infoElement = document.getElementById('dwgInfo');
@@ -63,19 +120,25 @@
         }
 
         // create the editor
-        const dwgContainer = document.getElementById('dwgJsonEditor')
-        const dxfContainer = document.getElementById('dxfJsonEditor')
+        const container1 = document.getElementById('jsonEditor1')
+        const container2 = document.getElementById('jsonEditor2')
+        const container3 = document.getElementById('jsonEditor3')
         const options = {
             mode: 'view'
         }
-        const dwgJsonEditor = new JSONEditor(dwgContainer, options)
-        const dxfJsonEditor = new JSONEditor(dxfContainer, options)
+        const jsonEditor1 = new JSONEditor(container1, options)
+        const jsonEditor2 = new JSONEditor(container2, options)
+        const jsonEditor3 = new JSONEditor(container3, options)
 
         // handle file input change event
         const fileInput = document.getElementById('fileInput')
+        const dwgFileNameElement = document.getElementById('dwgFileName')
         fileInput.addEventListener('change', function(event) {
             const file = event.target.files[0]
             if (file) {
+                // Update file name display
+                dwgFileNameElement.textContent = file.name
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const fileContent = e.target.result;
@@ -85,13 +148,13 @@
                     const parser = new DxfParser();
                     if (file.name.endsWith(".dwg")) {
                         const result = parser.libredwgConvertEx(fileContent);
-                        dwgJsonEditor.set(result.database);
+                        jsonEditor1.set(result.database);
                         version = result.version;
                         codepage = result.codepage;
                         stats = result.stats;
                     }
                     const result = parser.parse(fileContent);
-                    dxfJsonEditor.set({
+                    jsonEditor2.set({
                         tables: result.tables,
                         objects: result.objects,
                         header: result.header,
@@ -104,12 +167,57 @@
                     printDwgInfo(version, codepage, stats);
                 }
 
-                dwgJsonEditor.clear();
-                dxfJsonEditor.clear();
+                jsonEditor1.clear();
+                jsonEditor2.clear();
                 // read the file
                 reader.readAsArrayBuffer(file)
             } else {
+                dwgFileNameElement.textContent = 'No File Chosen'
                 console.log('No file selected')
+            }
+        })
+
+        // handle dxf file input change event
+        const fileInputDxf = document.getElementById('fileInputDxf')
+        const dxfFileNameElement = document.getElementById('dxfFileName')
+        fileInputDxf.addEventListener('change', function(event) {
+            const file = event.target.files[0]
+            if (file) {
+                // Update file name display
+                dxfFileNameElement.textContent = file.name
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileContent = e.target.result;
+                    const parser = new DxfParser();
+                    
+                    // Parse DXF file using dxf-parser
+                    const result = parser.parse(fileContent);
+                    
+                    // Display in the third column (dxf-parser result)
+                    jsonEditor3.set({
+                        tables: result.tables,
+                        objects: result.objects,
+                        header: result.header,
+                        entities: result.entities,
+                        classes: result.classes,
+                        blocks: result.blocks,
+                    });
+                    
+                    // Display info
+                    const infoElement = document.getElementById('dxfInfo');
+                    infoElement.innerHTML = '';
+                    const version = result.header["$ACADVER"] || "Unknown";
+                    const codepage = result.header["$DWGCODEPAGE"] || "Unknown";
+                    infoElement.textContent = `Version: ${version}, Code Page: ${codepage}`;
+                }
+
+                jsonEditor3.clear();
+                // read the file
+                reader.readAsArrayBuffer(file)
+            } else {
+                dxfFileNameElement.textContent = 'No File Chosen'
+                console.log('No DXF file selected')
             }
         })
     </script>
