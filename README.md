@@ -1,28 +1,56 @@
-# dxf-viewer-examples
-Examples for viewing DXF files using Three.js.
-- [Online examples](https://dxf.thingraph.site/)
+## dxf-viewer-examples
+
+Examples showing how to view **2D DXF/DWG drawings** in the browser using the `@x-viewer/core` 2D viewer engine (WebGL/Three.js based).
+
+- **Online demos**: [Online examples](https://dxf.thingraph.site/)
 
 ## Run examples
-```
+
+```bash
+npm install
 npm start
 ```
 
-# dxf-viewer
-This example project is built on a WebGL based JS SDK, which provides a Viewer2d.
+The dev server will start and you can open the examples in your browser.
 
-### Viewer2d
-The Viewer2d class is utilized for viewing 2D drawings and PDF. To work with DWG files, they need to be converted to DXF format first using the dwg2dxf.exe worker. The tool supports most common entity types, OLE, and regions via dwg2dxf conversion. It also supports common line types, hatch styles, and line widths.
+---
 
-### Example
-``` typescript
-import { Viewer2d, Viewer2dConfig, ModelConfig } from "dxf-viewer";
+## About @x-viewer/core
 
-const viewerCfg: Viewer2dConfig = {
+The examples in this repo are built on top of `@x-viewer/core`, focusing on the **Viewer2d** for DXF/DWG drawings.  
+It includes DXF/DWG parsing and 2D rendering, layer control, layouts, measurements, markups and other utilities for building 2D drawing applications.
+
+### Features
+
+- High-performance 2D rendering: WebGL-based rendering engine built on Three.js
+- DXF/DWG support: Parse and render DXF/DWG files entirely in the browser without backend server
+- Rich 2D tools: layers, layouts, osnaps, distance/area/angle measurements, markups, comparison, screenshots, etc.
+- Modular architecture: Designed for extensibility and seamless integration
+- TypeScript: Full TypeScript support with comprehensive type definitions
+
+### Install @x-viewer/core (use in your own project)
+
+```bash
+npm install @x-viewer/core
+# or
+pnpm add @x-viewer/core
+# or
+yarn add @x-viewer/core
+```
+
+### Quick Start – Viewer2d (DXF/DWG Viewer)
+
+```typescript
+import { Viewer2d } from "@x-viewer/core";
+
+// Create a 2D viewer
+const viewerCfg = {
     containerId: "myCanvas",
     enableSpinner: true,
     enableLayoutBar: true,
 };
-const modelCfg: ModelConfig = {
+
+const modelCfg = {
     modelId: "id_0",
     name: "sample",
     src: "http://www.abc.com/sample.dxf",
@@ -79,3 +107,11 @@ viewer.goToHomeView();
 
 ### Contact Us
 - For any inquiries or support, please contact us at [thingraph@outlook.com](mailto:thingraph@outlook.com).
+
+---
+
+## Related Packages
+
+- `@x-viewer/core` – Core viewer engine (2D/3D)
+- `@x-viewer/plugins` – Extensible functionality modules
+- `@x-viewer/ui` – Reusable UI components
