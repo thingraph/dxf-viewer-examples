@@ -22,6 +22,8 @@
     <script type="importmap">
         {
             "imports": {
+                "pdfjs-dist": "./libs/pdf/pdf.min.js",
+                "pdfjs-dist/build/pdf.worker.min.js": "./libs/pdf/pdf.worker.min.js",
                 "@x-viewer/core": "https://cdn.jsdelivr.net/npm/@x-viewer/core@latest/dist/index.esm.js",
                 "@x-viewer/plugins": "https://cdn.jsdelivr.net/npm/@x-viewer/plugins@latest/dist/index.esm.js",
                 "@x-viewer/ui": "https://cdn.jsdelivr.net/npm/@x-viewer/ui@latest/dist/index.esm.js"
@@ -63,40 +65,24 @@
         await viewer.setFont(fontFiles);
 
         const menuConfig = {
-            [ToolbarMenuId.Settings]: {
-                onActive: () => {
-                    console.log("[Toolbar]", "Activate Settings");
-                    if (!window.settingsPanel) {
-                        window.settingsPanel = new Settings2dPlugin(window.viewer, { language });
-                    }
-                    window.settingsPanel.show();
-                },
-                onDeactive: () => {
-                    console.log("[Toolbar]", "Deactivate Settings");
-                    window.settingsPanel.hide();
-                },
-                mutexIds: [
-                    ToolbarMenuId.Measure,
-                    ToolbarMenuId.MeasureDistance,
-                    ToolbarMenuId.MeasureArea,
-                    ToolbarMenuId.MeasureAngle,
-                    ToolbarMenuId.MeasureCoordinate,
-                ],
-            },
             [ToolbarMenuId.Layers]: {
                 onActive: () => {
                     console.log("[Toolbar]", "Activate Layers");
                     if (!window.layerManager) {
-                        window.layerManager = new LayerManagerPlugin(window.viewer)
-                        window.layerManager.addEventListener("Visibilitychange", (visible) => {
-                            window.toolbar.setActive("Layers", visible);
+                        window.layerManager = new LayerManagerPlugin(window.viewer);
+                        window.layerManager.addEventListener("visibilitychange", (visible) => {
+                            const isActive = toolbarPlugin.isActive(ToolbarMenuId.Layers);
+                            // do this check to avoid recursive call
+                            if (isActive !== visible) {
+                                toolbarPlugin.setActive(ToolbarMenuId.Layers, visible);
+                            }
                         });
                     }
-                    window.layerManager.show();
+                    window.layerManager.setVisible(true);
                 },
                 onDeactive: () => {
                     console.log("[Toolbar]", "Deactivate Layers");
-                    window.layerManager.hide();
+                    window.layerManager.setVisible(false);
                 },
                 mutexIds: [
                     ToolbarMenuId.Measure,
@@ -112,8 +98,9 @@
         new MarkupPlugin(viewer);
         new MeasurementPlugin(viewer, { language });
         new ScreenshotPlugin(viewer);
+        new Settings2dPlugin(viewer, { language, visible: false });
         new StatsPlugin(viewer);
-        window.toolbar = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
+        window.toolbarPlugin = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
 
         const modelCfg = {
             modelId: "rac_basic_sample_project",
