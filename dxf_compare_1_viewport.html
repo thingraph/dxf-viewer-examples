@@ -21,16 +21,17 @@
     <script type="importmap">
         {
             "imports": {
-                "@x-viewer/core": "https://cdn.jsdelivr.net/npm/@x-viewer/core@latest/dist/index.esm.js",
-                "@x-viewer/plugins": "https://cdn.jsdelivr.net/npm/@x-viewer/plugins@latest/dist/index.esm.js",
-                "@x-viewer/ui": "https://cdn.jsdelivr.net/npm/@x-viewer/ui@latest/dist/index.esm.js"
+                "@x-viewer/core": "../packages/core/dist/index.esm.js",
+                "@x-viewer/plugins": "../packages/plugins/dist/index.esm.js",
+                "@x-viewer/ui": "../packages/ui/dist/index.esm.js"
             }
         }
     </script>
     <script type="module">
         import {
-            Viewer2d,
             BaseDxfCompareHelper,
+            THREE,
+            Viewer2d,
         } from "@x-viewer/core";
         import {
             AxisGizmoPlugin,
@@ -101,7 +102,15 @@
             const progress = ((event.loaded * 100) / event.total).toFixed(2);
             console.log(`[Demo] Compare progress: ${progress}%`);
         };
-        await compareHelper.compare({src: url1, modelId: "dxf_3"}, {src: url2, modelId: "dxf_3_1"}, undefined, onProgress).then(() => {
+        await compareHelper.compare(
+            {src: url1, modelId: "dxf_3"},
+            {src: url2, modelId: "dxf_3_1"},
+            {
+                addedColor: new THREE.Color(0, 1, 0), // green
+                removedColor: new THREE.Color(1, 0, 0), // red
+            },
+            onProgress
+        ).then(() => {
             console.log(`[Demo] Compared models: ${url1}, ${url2}`);
             new DxfComparePanel(compareHelper, compareHelper.container);
         }).catch((reason) => {
