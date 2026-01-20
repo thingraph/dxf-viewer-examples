@@ -28,6 +28,11 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .btn.disabled {
+            opacity: 0.5;
+            cursor: default;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -35,15 +40,15 @@
     <table class="table">
         <tr>
             <td>
-                <label for="fileInput" class="btn">Choose Dwg File</label>
-                <input type="file" id="fileInput" accept=".dwg" style="display: none;" />
+                <label for="fileInput" class="btn disabled">Choose Dwg File</label>
+                <input type="file" id="fileInput" accept=".dwg" style="display: none;" disabled />
                 <span id="dwgFileName">No File Chosen</span>
                 <div id="dwgInfo"></div>
             </td>
             <td></td>
             <td>
-                <label for="fileInputDxf" class="btn">Choose Dxf File</label>
-                <input type="file" id="fileInputDxf" accept=".dxf" style="display: none;" />
+                <label for="fileInputDxf" class="btn disabled">Choose Dxf File</label>
+                <input type="file" id="fileInputDxf" accept=".dxf" style="display: none;" disabled />
                 <span id="dxfFileName">No File Chosen</span>
                 <div id="dxfInfo"></div>
             </td>
@@ -67,7 +72,7 @@
         (function() {
             // Check if running locally (localhost, 127.0.0.1, or file:// protocol)
             const wl = window.location;
-            const isDevEnv = wl.hostname === 'localhost' || wl.hostname === '127.0.0.1';
+            const isDevEnv = false;
 
             // Load jsoneditor based on environment
             const jsoneditorJsPath = isDevEnv
@@ -90,9 +95,12 @@
             document.head.appendChild(script);
 
             // Set import map for x-viewer/core
-            const corePath = isDevEnv 
-                ? "../packages/core/dist/index.esm.js"
-                : "https://cdn.jsdelivr.net/npm/@x-viewer/core@latest/dist/index.esm.js";
+            const resolvePath = (pkgName) =>
+                isDevEnv
+                    ? `../packages/${pkgName}/dist/index.esm.js`
+                    : `https://cdn.jsdelivr.net/npm/@x-viewer/${pkgName}@latest/dist/index.esm.js`;
+
+            const corePath = resolvePath("core");
 
             const importMap = document.createElement('script');
             importMap.type = 'importmap';
@@ -106,6 +114,14 @@
     </script>
     <script type="module">
         import { DxfParser, VERSION, LIBREDWG_WEB_VERSION } from "@x-viewer/core";
+
+        // Enable file selection buttons after page and resources are fully loaded
+        window.addEventListener("load", () => {
+            document.querySelector('label[for="fileInput"]').classList.remove("disabled");
+            document.querySelector('label[for="fileInputDxf"]').classList.remove("disabled");
+            document.getElementById("fileInput").disabled = false;
+            document.getElementById("fileInputDxf").disabled = false;
+        });
 
         // Display libredwg-web version
         const libredwgVersionElement = document.getElementById('libredwgVersion');

@@ -19,17 +19,34 @@
     <div id="app">
         <div id="myCanvas"></div>
     </div>
-    <script type="importmap">
-        {
-            "imports": {
-                "pdfjs-dist": "./libs/pdf/pdf.min.js",
-                "pdfjs-dist/build/pdf.worker.min.js": "./libs/pdf/pdf.worker.min.js",
-                "@x-viewer/core": "https://cdn.jsdelivr.net/npm/@x-viewer/core@latest/dist/index.esm.js",
-                "@x-viewer/plugins": "https://cdn.jsdelivr.net/npm/@x-viewer/plugins@latest/dist/index.esm.js",
-                "@x-viewer/ui": "https://cdn.jsdelivr.net/npm/@x-viewer/ui@latest/dist/index.esm.js"
-            }
-        }
-      </script>
+    <script>
+        // Auto-detect environment and set import map for x-viewer packages and pdfjs aliases
+        (function () {
+            const wl = window.location;
+            const isDevEnv = false;
+            const resolvePath = (pkgName) =>
+                isDevEnv
+                    ? `../packages/${pkgName}/dist/index.esm.js`
+                    : `https://cdn.jsdelivr.net/npm/@x-viewer/${pkgName}@latest/dist/index.esm.js`;
+
+            const corePath = resolvePath("core");
+            const pluginsPath = resolvePath("plugins");
+            const uiPath = resolvePath("ui");
+
+            const importMap = document.createElement("script");
+            importMap.type = "importmap";
+            importMap.textContent = JSON.stringify({
+                imports: {
+                    "pdfjs-dist": "./libs/pdf/pdf.min.js",
+                    "pdfjs-dist/build/pdf.worker.min.js": "./libs/pdf/pdf.worker.min.js",
+                    "@x-viewer/core": corePath,
+                    "@x-viewer/plugins": pluginsPath,
+                    "@x-viewer/ui": uiPath,
+                },
+            });
+            document.head.appendChild(importMap);
+        })();
+    </script>
     <script type="module">
         import {
             FontManager,

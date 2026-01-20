@@ -21,9 +21,11 @@
         }
 
         #myCanvas {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            left: 7.5%;
+            top: 7.5%;
         }
 
         .hotpoint {
@@ -97,14 +99,31 @@
     <div id="app">
         <div id="myCanvas"></div>
     </div>
-    <script type="importmap">
-        {
-            "imports": {
-                "@x-viewer/core": "https://cdn.jsdelivr.net/npm/@x-viewer/core@latest/dist/index.esm.js",
-                "@x-viewer/plugins": "https://cdn.jsdelivr.net/npm/@x-viewer/plugins@latest/dist/index.esm.js",
-                "@x-viewer/ui": "https://cdn.jsdelivr.net/npm/@x-viewer/ui@latest/dist/index.esm.js"
-            }
-        }
+    <script>
+        // Auto-detect environment and set import map for x-viewer packages
+        (function () {
+            const wl = window.location;
+            const isDevEnv = false;
+            const resolvePath = (pkgName) =>
+                isDevEnv
+                    ? `../packages/${pkgName}/dist/index.esm.js`
+                    : `https://cdn.jsdelivr.net/npm/@x-viewer/${pkgName}@latest/dist/index.esm.js`;
+
+            const corePath = resolvePath("core");
+            const pluginsPath = resolvePath("plugins");
+            const uiPath = resolvePath("ui");
+
+            const importMap = document.createElement("script");
+            importMap.type = "importmap";
+            importMap.textContent = JSON.stringify({
+                imports: {
+                    "@x-viewer/core": corePath,
+                    "@x-viewer/plugins": pluginsPath,
+                    "@x-viewer/ui": uiPath,
+                },
+            });
+            document.head.appendChild(importMap);
+        })();
     </script>
     <script type="module">
         import {
