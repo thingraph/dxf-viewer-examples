@@ -1,0 +1,118 @@
+<svg width="200" height="100" viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- CAD blue -->
+    <linearGradient id="ccCad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1565C0"/>
+      <stop offset="1" stop-color="#42A5F5"/>
+    </linearGradient>
+    <!-- Compare orange -->
+    <linearGradient id="ccDiff" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF8A3D"/>
+      <stop offset="1" stop-color="#FFB347"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background (transparent, card provides background) -->
+  <rect x="0" y="0" width="400" height="260" fill="#FFFFFF00"/>
+
+  <!-- Left DWG sheet -->
+  <g transform="translate(40,44) scale(1.3)">
+    <rect x="0" y="0" width="112" height="140" rx="8" fill="#F5F7FB" stroke="#D1D9E8" stroke-width="1"/>
+    <!-- simple drawing: sectional view + dimension (base shaft), centered in sheet -->
+    <g transform="translate(26,22) scale(1.25)" fill="none">
+      <!-- base shaft cross-section (same on both sides) -->
+      <!-- outer diameter -->
+      <circle cx="24" cy="22" r="16" stroke="#C4D0E8" stroke-width="1.2"/>
+      <!-- inner hole -->
+      <circle cx="24" cy="22" r="7" stroke="#C4D0E8" stroke-width="1"/>
+      <!-- section hatching -->
+      <path d="M16 14L12 10" stroke="#D5DEEB" stroke-width="1"/>
+      <path d="M20 18L16 14" stroke="#D5DEEB" stroke-width="1"/>
+      <path d="M24 22L20 18" stroke="#D5DEEB" stroke-width="1"/>
+      <path d="M28 26L24 22" stroke="#D5DEEB" stroke-width="1"/>
+      <path d="M32 30L28 26" stroke="#D5DEEB" stroke-width="1"/>
+      <!-- center line -->
+      <path d="M4 22H44" stroke="#C4D0E8" stroke-width="1" stroke-dasharray="3 3"/>
+      <!-- dimension line (left, highlighted) -->
+      <path d="M8 44H40" stroke="#FF8A3D" stroke-width="1.4"/>
+      <!-- extension lines -->
+      <path d="M12 38V48" stroke="#C4D0E8" stroke-width="1"/>
+      <path d="M36 38V48" stroke="#C4D0E8" stroke-width="1"/>
+      <!-- arrows -->
+      <path d="M12 44L15 41" stroke="#FF8A3D" stroke-width="1.4"/>
+      <path d="M12 44L15 47" stroke="#FF8A3D" stroke-width="1.4"/>
+      <path d="M36 44L33 41" stroke="#FF8A3D" stroke-width="1.4"/>
+      <path d="M36 44L33 47" stroke="#FF8A3D" stroke-width="1.4"/>
+      <!-- dimension text -->
+      <text x="24" y="41" text-anchor="middle"
+            font-family="Consolas, Menlo, monospace"
+            font-size="8" fill="#FF8A3D">
+        Ø40
+      </text>
+    </g>
+    <rect x="26" y="104" width="60" height="22" rx="13" fill="#143B7A"/>
+    <text x="56" y="119" text-anchor="middle"
+          font-family="Segoe UI, Roboto, sans-serif"
+          font-size="11" font-weight="600" fill="#FFFFFF">
+      DWG
+    </text>
+  </g>
+
+  <!-- Right DXF sheet -->
+  <g transform="translate(206,44) scale(1.3)">
+    <rect x="0" y="0" width="112" height="140" rx="8" fill="#F5F7FB" stroke="#D1D9E8" stroke-width="1"/>
+    <!-- simple drawing: same sectional view with a slightly different dimension, centered in sheet -->
+    <g transform="translate(26,22) scale(1.25)" fill="none">
+      <!-- base shaft cross-section (same on both sides) -->
+      <circle cx="24" cy="22" r="16" stroke="#C4D0E8" stroke-width="1.2"/>
+      <circle cx="24" cy="22" r="7" stroke="#C4D0E8" stroke-width="1"/>
+      <!-- section hatching -->
+      <path d="M16 14L12 10" stroke="#D5DEEB" stroke-width="1"/>
+      <path d="M20 18L16 14" stroke="#D5DEEB" stroke-width="1"/>
+      <path d="M24 22L20 18" stroke="#D5DEEB" stroke-width="1"/>
+      <path d="M28 26L24 22" stroke="#D5DEEB" stroke-width="1"/>
+      <path d="M32 30L28 26" stroke="#D5DEEB" stroke-width="1"/>
+      <!-- center line -->
+      <path d="M4 22H44" stroke="#C4D0E8" stroke-width="1" stroke-dasharray="3 3"/>
+      <!-- dimension line (right, highlighted in blue, different value) -->
+      <path d="M8 44H40" stroke="#42A5F5" stroke-width="1.4"/>
+      <path d="M12 38V48" stroke="#C4D0E8" stroke-width="1"/>
+      <path d="M36 38V48" stroke="#C4D0E8" stroke-width="1"/>
+      <!-- arrows -->
+      <path d="M12 44L15 41" stroke="#42A5F5" stroke-width="1.4"/>
+      <path d="M12 44L15 47" stroke="#42A5F5" stroke-width="1.4"/>
+      <path d="M36 44L33 41" stroke="#42A5F5" stroke-width="1.4"/>
+      <path d="M36 44L33 47" stroke="#42A5F5" stroke-width="1.4"/>
+      <!-- dimension text (different value) -->
+      <text x="24" y="41" text-anchor="middle"
+            font-family="Consolas, Menlo, monospace"
+            font-size="8" fill="#42A5F5">
+        Ø42
+      </text>
+    </g>
+    <rect x="26" y="104" width="60" height="22" rx="13" fill="#19A6C5"/>
+    <text x="56" y="119" text-anchor="middle"
+          font-family="Segoe UI, Roboto, sans-serif"
+          font-size="11" font-weight="600" fill="#FFFFFF">
+      DXF
+    </text>
+  </g>
+
+  <!-- Center compare indicator (aligned with widened DWG/DXF sheets) -->
+  <g transform="translate(163,84) scale(1.3)">
+    <!-- vertical divider -->
+    <rect x="24" y="-40" width="2" height="120" fill="#D1D9E8"/>
+
+    <!-- <> diff symbol (centered around split line) -->
+    <g transform="translate(-8,0)">
+      <path d="M0 20L16 6V14L8 20L16 26V34L0 20Z" fill="url(#ccDiff)"/>
+      <path d="M48 6L64 20L48 34V26L56 20L48 14V6Z" fill="url(#ccDiff)"/>
+    </g>
+
+    <!-- arrows to imply comparison -->
+    <path d="M10 -10L22 -4L10 2" fill="none" stroke="#90CAF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M40 50L28 44L40 38" fill="none" stroke="#90CAF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
+
+

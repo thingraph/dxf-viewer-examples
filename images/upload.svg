@@ -1,0 +1,38 @@
+<svg width="200" height="100" viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="uplAccent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF8A3D"/>
+      <stop offset="1" stop-color="#FFB347"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background (solid white) -->
+  <rect x="0" y="0" width="400" height="260" fill="#FFFFFF00"/>
+
+  <!-- Centered large upload icon (occupies ~90% of area) -->
+  <g transform="translate(29,-23) scale(4.5)">
+    <!-- tray -->
+    <rect x="8" y="40" width="60" height="16" rx="0" fill="#E2E6F0" stroke="url(#uplAccent)" stroke-width="0.5"/>
+    <!-- arrow -->
+    <path d="M38 12L24 30H32V46H44V30H52L38 12Z" fill="url(#uplAccent)"/>
+  </g>
+
+  <!-- Larger CAD / DWG badges under arrow -->
+  <g transform="translate(115,190)">
+    <rect x="0" y="0" width="70" height="26" rx="13" fill="#143B7A"/>
+    <text x="35" y="17" text-anchor="middle"
+          font-family="Segoe UI, Roboto, sans-serif"
+          font-size="12" font-weight="600" fill="#FFFFFF">
+      DWG
+    </text>
+
+    <rect x="90" y="0" width="70" height="26" rx="13" fill="#19A6C5"/>
+    <text x="125" y="17" text-anchor="middle"
+          font-family="Segoe UI, Roboto, sans-serif"
+          font-size="12" font-weight="600" fill="#FFFFFF">
+      DXF
+    </text>
+  </g>
+</svg>
+
+
