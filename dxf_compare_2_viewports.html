@@ -29,20 +29,19 @@
 
           #syncCamera {
               position: absolute;
-              text-align: center;
-              top: 20px;
-              left: calc(50% - 40px);
-              height: 40px;
-              width: 80px;
-              font-size: 16px;
-              line-height: 40px;
+              top: 16px;
+              left: 50%;
+              transform: translateX(-50%);
+              min-width: 32px;
+              min-height: 32px;
+              padding: 4px 6px;
+              font-size: 18px; /* icon size */
+              line-height: 1;
+              border-radius: 6px;
+              border: 1px solid #409effaa;
+              background-color: rgba(64, 158, 255, 0.4);
               color: #fff;
-              border-radius: 5px;
-              border: 1px solid #409eff;
-              background-color: #409eff;
-              font-family: inherit;
               cursor: pointer;
-              margin: 5px auto;
           }
         </style>
     </head>
@@ -53,13 +52,14 @@
             <div class="split"></div>
             <div id="myCanvas2"></div>
         </div>
-        <button id="syncCamera" title="Click to sync or unsync cameras">unsynced</button>
+        <!-- Use an icon-style button to indicate synced/unsynced state (unlocked = unsynced, locked = synced) -->
+        <button id="syncCamera" title="Click to toggle camera sync">🔓</button>
 
         <script>
             // Auto-detect environment and set import map for x-viewer packages
             (function () {
                 const wl = window.location;
-                const isDevEnv = false;
+                const isDevEnv = wl.hostname === "localhost" || wl.hostname === "127.0.0.1";
                 const resolvePath = (pkgName) =>
                     isDevEnv
                         ? `../packages/${pkgName}/dist/index.esm.js`
@@ -128,14 +128,16 @@
             const syncCameraBtn = document.getElementById("syncCamera");
             let enableSyncCamera = false;
             syncCameraBtn.onclick = function () {
-                if (!enableSyncCamera) {
+                enableSyncCamera = !enableSyncCamera;
+                if (enableSyncCamera) {
                     compareHelper.enableSyncCamera(true);
-                    syncCameraBtn.innerText = "synced";
+                    syncCameraBtn.textContent = "🔒";
+                    syncCameraBtn.title = "Click to unsync cameras";
                 } else {
                     compareHelper.enableSyncCamera(false);
-                    syncCameraBtn.innerText = "unsynced";
+                    syncCameraBtn.textContent = "🔓";
+                    syncCameraBtn.title = "Click to sync cameras";
                 }
-                enableSyncCamera = !enableSyncCamera;
             };
 
             const onProgress = (event) => {
