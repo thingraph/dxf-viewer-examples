@@ -59,7 +59,7 @@
             // Auto-detect environment and set import map for x-viewer packages
             (function () {
                 const wl = window.location;
-                const isDevEnv = wl.hostname === "localhost" || wl.hostname === "127.0.0.1";
+                const isDevEnv = false;
                 const resolvePath = (pkgName) =>
                     isDevEnv
                         ? `../packages/${pkgName}/dist/index.esm.js`
