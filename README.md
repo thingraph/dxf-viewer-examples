@@ -53,7 +53,7 @@ const viewerCfg = {
 const modelCfg = {
     modelId: "id_0",
     name: "sample",
-    src: "http://www.abc.com/sample.dxf",
+    src: "http://www.abc.com/sample.dwg",
 }
 const fontFiles = ["http://www.abc.com/hztxt.shx", "http://www.abc.com/simplex.shx"];
 
