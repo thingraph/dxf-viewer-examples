@@ -1,6 +1,6 @@
-## dxf-viewer-examples
+## dwg-viewer-example
 
-Examples showing how to view **2D DXF/DWG drawings** in the browser using the `@x-viewer/core` 2D viewer engine (WebGL/Three.js based).
+Examples showing how to view **2D DWG/DXF drawings** in the browser using the `@x-viewer/core` 2D viewer engine (WebGL/Three.js based).
 
 - **Online demos**: [Online examples](https://dxf.thingraph.site/)
 
@@ -17,13 +17,13 @@ The dev server will start and you can open the examples in your browser.
 
 ## About @x-viewer/core
 
-The examples in this repo are built on top of `@x-viewer/core`, focusing on the **Viewer2d** for DXF/DWG drawings.  
-It includes DXF/DWG parsing and 2D rendering, layer control, layouts, measurements, markups and other utilities for building 2D drawing applications.
+The examples in this repo are built on top of `@x-viewer/core`, focusing on the **Viewer2d** for DWG/DXF drawings.
+It includes DWG/DXF parsing and 2D rendering, layer control, layouts, measurements, markups and other utilities for building 2D drawing applications.
 
 ### Features
 
 - High-performance 2D rendering: WebGL-based rendering engine built on Three.js
-- DXF/DWG support: Parse and render DXF/DWG files entirely in the browser without backend server
+- DWG/DXF support: Parse and render DWG/DXF files entirely in the browser without backend server
 - Rich 2D tools: layers, layouts, osnaps, distance/area/angle measurements, markups, comparison, screenshots, etc.
 - Modular architecture: Designed for extensibility and seamless integration
 - TypeScript: Full TypeScript support with comprehensive type definitions
@@ -38,7 +38,7 @@ pnpm add @x-viewer/core
 yarn add @x-viewer/core
 ```
 
-### Quick Start – Viewer2d (DXF/DWG Viewer)
+### Quick Start – Viewer2d (DWG/DXF Viewer)
 
 ```typescript
 import { Viewer2d } from "@x-viewer/core";
