@@ -77,6 +77,8 @@ viewer.goToHomeView();
 <img src="images/snapshots/layouts.gif" width="400">
 - Distance measurement
 <img src="images/snapshots/measure_dist.gif" width="400">
+- Fill patterns
+<img src="images/snapshots/fill_patterns.gif" width="400">
 - Area measurement
 - Angle measurement
 - Markups

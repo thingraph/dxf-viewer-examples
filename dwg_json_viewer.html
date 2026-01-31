@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dwg Database JSON Viewer</title>
     <style>
-        #dwgInfo:empty, #dxfInfo:empty {
+        #fileInfo1:empty, #fileInfo2:empty {
             height: 10px;
         }
       
-        #dwgInfo, #dxfInfo {
+        #fileInfo1, #fileInfo2 {
             margin-top: 10px;
             margin-bottom: 10px;
         }
@@ -42,15 +42,15 @@
             <td>
                 <label for="fileInput" class="btn disabled">Choose Dwg File</label>
                 <input type="file" id="fileInput" accept=".dwg" style="display: none;" disabled />
-                <span id="dwgFileName">No File Chosen</span>
-                <div id="dwgInfo"></div>
+                <span id="fileName1">No File Chosen</span>
+                <div id="fileInfo1"></div>
             </td>
             <td></td>
             <td>
-                <label for="fileInputDxf" class="btn disabled">Choose Dxf File</label>
-                <input type="file" id="fileInputDxf" accept=".dxf" style="display: none;" disabled />
-                <span id="dxfFileName">No File Chosen</span>
-                <div id="dxfInfo"></div>
+                <label for="fileInput2" class="btn disabled">Choose Dxf File</label>
+                <input type="file" id="fileInput2" accept=".dxf" style="display: none;" disabled />
+                <span id="fileName2">No File Chosen</span>
+                <div id="fileInfo2"></div>
             </td>
         </tr>
         <tr>
@@ -72,7 +72,7 @@
         (function() {
             // Check if running locally (localhost, 127.0.0.1, or file:// protocol)
             const wl = window.location;
-            const isDevEnv = wl.hostname === "localhost" || wl.hostname === "127.0.0.1";
+            const isDevEnv = false;
 
             // Load jsoneditor based on environment
             const jsoneditorJsPath = isDevEnv
@@ -127,9 +127,9 @@
             // Enable file selection buttons after page and resources are fully loaded
             window.addEventListener("load", () => {
                 document.querySelector('label[for="fileInput"]').classList.remove("disabled");
-                document.querySelector('label[for="fileInputDxf"]').classList.remove("disabled");
+                document.querySelector('label[for="fileInput2"]').classList.remove("disabled");
                 document.getElementById("fileInput").disabled = false;
-                document.getElementById("fileInputDxf").disabled = false;
+                document.getElementById("fileInput2").disabled = false;
             });
 
             // Display libredwg-web version
@@ -144,8 +144,8 @@
                 coreVersionElement.textContent = `(v${VERSION})`;
             }
 
-            const printDwgInfo = (version, codepage, stats) => {
-                const infoElement = document.getElementById('dwgInfo');
+            const printFileInfo1 = (version, codepage, stats) => {
+                const infoElement = document.getElementById('fileInfo1');
                 infoElement.innerHTML = '';
                 infoElement.textContent = `Version: ${version}, Code Page: ${codepage}, Unknown Entities: ${stats.unknownEntityCount}`;
             }
@@ -163,12 +163,12 @@
 
             // handle file input change event
             const fileInput = document.getElementById('fileInput')
-            const dwgFileNameElement = document.getElementById('dwgFileName')
+            const fileName1Element = document.getElementById('fileName1')
             fileInput.addEventListener('change', function(event) {
                 const file = event.target.files[0]
                 if (file) {
                     // Update file name display
-                    dwgFileNameElement.textContent = file.name
+                    fileName1Element.textContent = file.name
                     
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -177,25 +177,30 @@
                         let codepage;
                         let stats = { unknownEntityCount: "" };
                         const parser = new DxfParser();
-                        if (file.name.endsWith(".dwg")) {
+                        {
                             const result = parser.libredwgConvertEx(fileContent);
                             jsonEditor1.set(result.database);
                             version = result.version;
                             codepage = result.codepage;
                             stats = result.stats;
                         }
-                        const result = parser.parse(fileContent);
-                        jsonEditor2.set({
-                            tables: result.tables,
-                            objects: result.objects,
-                            header: result.header,
-                            entities: result.entities,
-                            classes: result.classes,
-                            blocks: result.blocks,
-                        });
-                        version = version || result.header["$ACADVER"];
-                        codepage = result.header["$DWGCODEPAGE"];
-                        printDwgInfo(version, codepage, stats);
+
+                        {
+                            // force to parse with libredwg-web parser
+                            // This will trigger libredwg-web to call libredwg.convertEx() again.
+                            const result = parser.parseDwg(fileContent);
+                            jsonEditor2.set({
+                                tables: result.tables,
+                                objects: result.objects,
+                                header: result.header,
+                                entities: result.entities,
+                                classes: result.classes,
+                                blocks: result.blocks,
+                            });
+                            version = version || result.header["$ACADVER"];
+                            codepage = codepage || result.header["$DWGCODEPAGE"];
+                        }
+                        printFileInfo1(version, codepage, stats);
                     }
 
                     jsonEditor1.clear();
@@ -203,19 +208,19 @@
                     // read the file
                     reader.readAsArrayBuffer(file)
                 } else {
-                    dwgFileNameElement.textContent = 'No File Chosen'
+                    fileName1Element.textContent = 'No File Chosen'
                     console.log('No file selected')
                 }
             })
 
             // handle dxf file input change event
-            const fileInputDxf = document.getElementById('fileInputDxf')
-            const dxfFileNameElement = document.getElementById('dxfFileName')
-            fileInputDxf.addEventListener('change', function(event) {
+            const fileInput2 = document.getElementById('fileInput2')
+            const fileName2Element = document.getElementById('fileName2')
+            fileInput2.addEventListener('change', function(event) {
                 const file = event.target.files[0]
                 if (file) {
                     // Update file name display
-                    dxfFileNameElement.textContent = file.name
+                    fileName2Element.textContent = file.name
 
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -236,7 +241,7 @@
                         });
 
                         // Display info
-                        const infoElement = document.getElementById('dxfInfo');
+                        const infoElement = document.getElementById('fileInfo2');
                         infoElement.innerHTML = '';
                         const version = result.header["$ACADVER"] || "Unknown";
                         const codepage = result.header["$DWGCODEPAGE"] || "Unknown";
@@ -247,7 +252,7 @@
                     // read the file
                     reader.readAsArrayBuffer(file)
                 } else {
-                    dxfFileNameElement.textContent = 'No File Chosen'
+                    fileName2Element.textContent = 'No File Chosen'
                     console.log('No DXF file selected')
                 }
             })
