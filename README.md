@@ -2,7 +2,7 @@
 
 Examples showing how to view **2D DWG/DXF drawings** in the browser using the `@x-viewer/core` 2D viewer engine (WebGL/Three.js based).
 
-- **Online demos**: [Online examples](https://dxf.thingraph.site/)
+- **Online demos**: [Online examples](https://dwg.thingraph.site/)
 
 ## Run examples
 
