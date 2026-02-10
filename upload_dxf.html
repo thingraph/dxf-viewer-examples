@@ -155,7 +155,7 @@
         const measurementData = [];
         let isShowMarkup = true;
 
-        const language = "en"; // "en" or "cn"
+        const language = "en"; // "en" or "zh"
         const viewerCfg = {
             containerId: "myCanvas",
             language,
@@ -218,13 +218,7 @@
                     console.log("[Toolbar]", "Deactivate Layers");
                     window.layerManager.setVisible(false);
                 },
-                mutexIds: [
-                    ToolbarMenuId.Measure,
-                    ToolbarMenuId.MeasureDistance,
-                    ToolbarMenuId.MeasureArea,
-                    ToolbarMenuId.MeasureAngle,
-                    ToolbarMenuId.MeasureCoordinate,
-                ],
+                mutexIds: [],
             },
         };
 
