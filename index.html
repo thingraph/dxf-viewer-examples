@@ -5,40 +5,134 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="description" content="dwg-viewer examples: online DWG/DXF viewer, PDF viewer, CAD JSON viewer, and CAD comparison in your browser. Upload local files or browse sample projects." />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://dwg.thingraph.site/" />
+    <meta property="og:title" content="DWG Viewer Examples" />
+    <meta property="og:description" content="Online DWG/DXF viewer, PDF viewer, CAD JSON viewer, and CAD comparison examples." />
+    <meta property="og:url" content="https://dwg.thingraph.site/" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
     <link rel="icon" href="./favicon.ico" />
     <link rel="stylesheet" type="text/css" href="./global.css" />
-    <title>x-viewer samples</title>
+    <title>DWG Viewer Examples | x-viewer</title>
     <style type="text/css">
+        :root {
+            --bg: #f8f9fb;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --card: #ffffff;
+            --border: rgba(109, 76, 65, .25);
+            --accent: #3a6aca;
+            --accent-2: #6d4c41;
+            --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+        }
         body {
             font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-            background: #f8f9fb;
+            background: var(--bg);
             margin: 0;
-            padding: 0 0 0 0;
-            color: #222;
+            padding: 0;
+            color: var(--text);
             font-size: 16px;
         }
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 0 18px;
+        }
+        .skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 10px;
+            background: #fff;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            z-index: 9999;
+        }
+        .skip-link:focus {
+            left: 18px;
+        }
         .header {
-            text-align: center;
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-top: 0;
-            padding: 36px 0 18px 0;
+            padding: 34px 0 26px 0;
             background: linear-gradient(90deg, #f6f6f6 60%, #e9e4e0 100%);
             border-bottom: 1.5px solid #ebeef5;
             box-shadow: 0 2px 8px 0 rgba(109, 76, 65, 0.04);
-            letter-spacing: 1px;
+        }
+        .hero-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .hero-title {
+            font-size: 2.0rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: 0.2px;
+        }
+        .hero-subtitle {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+            max-width: 70ch;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            color: #fff;
+            background: var(--accent);
+            box-shadow: 0 8px 18px rgba(58, 106, 202, 0.18);
+            transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+        }
+        .btn:focus-visible {
+            outline: 3px solid rgba(58, 106, 202, 0.35);
+            outline-offset: 3px;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(58, 106, 202, 0.24);
+            background: var(--accent-2);
+        }
+        .btn-ghost {
+            background: transparent;
+            color: var(--accent);
+            box-shadow: none;
+        }
+        .btn-ghost:hover {
+            background: rgba(58, 106, 202, 0.06);
+            box-shadow: none;
+        }
+        /* Hide CTA buttons from users, but keep links in DOM for crawlers. */
+        #hero-actions {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
         }
         .project-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, 250px);
-            gap: 10px;
-            padding: 10px;
-            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
-            justify-content: flex-start;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            padding: 0;
+            margin-top: 14px;
         }
         .project-card {
             width: 100%;
-            display: inline-block;
+            display: block;
         }
         .project-card-main {
             display: flex;
@@ -46,28 +140,39 @@
             overflow: hidden;
             height: 100%;
             min-width: 150px;
-            background-color: #fff;
-            color: #303133;
-            margin-bottom: 10px;
-            border: 1px solid rgba(109, 76, 65, .5);
-            margin: 1px;
-            transition: all .1s;
-            opacity: 0.95;
-            background-color: #f6f6f6;
+            background-color: var(--card);
+            color: #1f2937;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+            box-shadow: 0 8px 22px rgba(17, 24, 39, 0.06);
+        }
+        .project-card-link {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            outline: none;
         }
         .project-card-main:hover {
             cursor: pointer;
-            border: 1px solid rgba(109, 76, 65, 1.0);
-            opacity: 1.0;
-            box-shadow: 3px 5px 10px rgba(109, 76, 65, 0.5);
+            transform: translateY(-2px);
+            border-color: rgba(109, 76, 65, 0.45);
+            box-shadow: 0 16px 30px rgba(17, 24, 39, 0.12);
+        }
+        .project-card-link:focus-visible .project-card-main {
+            border-color: rgba(58, 106, 202, 0.7);
+            box-shadow: 0 0 0 4px rgba(58, 106, 202, 0.2);
         }
         .project-card-thumbnail {
-            height: 150px;
+            height: 160px;
             flex-shrink: 0;
             background-repeat: no-repeat;
             background-position: 50%;
             background-size: cover;
-            box-shadow: 0 0 1px rgba(0, 0, 0, .3);
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .05);
             transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
         }
         .project-card-main:hover .project-card-thumbnail {
@@ -77,12 +182,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 40px;
-            background: #f6f6f6;
+            min-height: 46px;
+            background: linear-gradient(180deg, rgba(248, 249, 251, 0.2), rgba(248, 249, 251, 1));
             text-align: center;
             font-size: 14px;
             padding: 2px;
-            line-height: 35px;
+            line-height: 1.2;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -96,6 +201,43 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+        .seo-links {
+            padding: 14px 14px 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.75);
+            color: #333;
+            font-size: 14px;
+        }
+        /* Keep links in DOM for crawlers, but hide them from users. */
+        #seo-links {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+        .seo-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+        }
+        .seo-links li {
+            margin: 0;
+        }
+        .seo-links a {
+            color: #3a6aca;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .seo-links a:hover {
+            color: #6d4c41;
+            text-decoration: underline;
         }
         .footer {
             width: 100%;
@@ -133,19 +275,67 @@
 </head>
 
 <body>
-    <div class="header">dwg-viewer examples</div>
-    <div class="project-cards-container"></div>
-    <!--
-    <div><a href="./upload_dxf.html">Upload local dxf/pdf</a></div>
-    <br />
-    <div><a href="./dxf_0.html">Dxf example 0</a></div>
-    <div><a href="./dxf_1.html">Dxf example 1</a></div>
-    <div><a href="./dxf_2.html">Dxf example 2</a></div>
-    <div><a href="./dxf_compare_1_viewport.html">Dxf example 3 (compare with 1 viewport)</a></div>
-    <div><a href="./dxf_compare_2_viewports.html">Dxf example 4 (compare with 2 viewports)</a></div>
-    <div><a href="./pdf_1.html">Pdf example 1</a></div>
-    <br />
-    -->
+    <a class="skip-link" href="#content">Skip to content</a>
+
+    <header class="header">
+        <div class="container hero-inner">
+            <h1 class="hero-title">DWG Viewer Examples</h1>
+            <p class="hero-subtitle">
+                Online DWG/DXF/PDF viewer and CAD tools powered by <a href="https://www.npmjs.com/package/@x-viewer/core" target="_blank" rel="noopener">x-viewer</a>. Upload your local files,
+                or explore sample projects in your browser.
+            </p>
+            <div id="hero-actions" class="hero-actions" aria-hidden="true">
+                <a class="btn" href="./upload_dxf.html">Upload local CAD</a>
+                <a class="btn btn-ghost" href="./dwg_0.html">Try sample viewer</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="content" class="container">
+        <section aria-label="Example quick links">
+            <div id="seo-links" class="seo-links" aria-hidden="true">
+                <div style="font-weight: 800; margin-bottom: 2px;">Browse examples</div>
+                <ul>
+                    <li><a href="./upload_dxf.html">Upload local CAD (DWG/DXF/PDF)</a></li>
+                    <li><a href="./dwg_json_viewer.html">DWG/DXF JSON structure viewer</a></li>
+                    <li><a href="./cad_compare_2_files.html">Compare 2 CAD files</a></li>
+                    <li><a href="./dwg_0.html">DWG example 0</a></li>
+                    <li><a href="./dwg_1.html">DWG example 1</a></li>
+                    <li><a href="./dwg_2.html">DWG example 2</a></li>
+                    <li><a href="./dxf_0.html">DXF example 0</a></li>
+                    <li><a href="./dxf_1.html">DXF example 1</a></li>
+                    <li><a href="./dxf_2.html">DXF example 2</a></li>
+                    <li><a href="./dxf_compare_1_viewport.html">DXF compare (1 viewport)</a></li>
+                    <li><a href="./dxf_compare_2_viewports.html">DXF compare (2 viewports)</a></li>
+                    <li><a href="./pdf_1.html">PDF viewer</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="project-cards-container"></div>
+    </main>
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "dwg-viewer examples",
+            "itemListElement": [
+                { "@type": "ListItem", "position": 1, "url": "https://dwg.thingraph.site/upload_dxf.html" },
+                { "@type": "ListItem", "position": 2, "url": "https://dwg.thingraph.site/dwg_json_viewer.html" },
+                { "@type": "ListItem", "position": 3, "url": "https://dwg.thingraph.site/cad_compare_2_files.html" },
+                { "@type": "ListItem", "position": 4, "url": "https://dwg.thingraph.site/dwg_0.html" },
+                { "@type": "ListItem", "position": 5, "url": "https://dwg.thingraph.site/dwg_1.html" },
+                { "@type": "ListItem", "position": 6, "url": "https://dwg.thingraph.site/dwg_2.html" },
+                { "@type": "ListItem", "position": 7, "url": "https://dwg.thingraph.site/dxf_0.html" },
+                { "@type": "ListItem", "position": 8, "url": "https://dwg.thingraph.site/dxf_1.html" },
+                { "@type": "ListItem", "position": 9, "url": "https://dwg.thingraph.site/dxf_2.html" },
+                { "@type": "ListItem", "position": 10, "url": "https://dwg.thingraph.site/dxf_compare_1_viewport.html" },
+                { "@type": "ListItem", "position": 11, "url": "https://dwg.thingraph.site/dxf_compare_2_viewports.html" },
+                { "@type": "ListItem", "position": 12, "url": "https://dwg.thingraph.site/pdf_1.html" }
+            ]
+        }
+    </script>
     <footer class="footer">
         <div class="footer-content">
             Contact: <a href="mailto:thingraph@outlook.com">thingraph@outlook.com</a>
@@ -186,16 +376,15 @@
                 projectCard.classList.add('project-card');
                 projectCard.innerHTML = `
                     <div class="project-card-main">
-                        <div class="project-card-thumbnail" style="background-image: url('${project.thumbnail}');"></div>
-                        <div class="project-card-desc">
-                        <span class="project-card-desc-text" title="${project.name}">${project.name}</span>
-                        </div>
+                        <a class="project-card-link" href="${project.link}" aria-label="${project.name}">
+                            <div class="project-card-thumbnail" style="background-image: url('${project.thumbnail}');" aria-hidden="true"></div>
+                            <div class="project-card-desc">
+                                <span class="project-card-desc-text" title="${project.name}">${project.name}</span>
+                            </div>
+                        </a>
                     </div>
                     `;
                 projectCards.appendChild(projectCard);
-                projectCard.onclick = () => {
-                    window.location.href = project.link;
-                };
             });
             projectCardsContainer.appendChild(projectCards);
         };

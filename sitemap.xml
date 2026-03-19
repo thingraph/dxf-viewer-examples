@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://dwg.thingraph.site/</loc><priority>1.0</priority></url>
+  <url><loc>https://dwg.thingraph.site/upload_model.html</loc><priority>0.8</priority></url>
+  <url><loc>https://dwg.thingraph.site/upload_dxf.html</loc><priority>0.8</priority></url>
+  <url><loc>https://dwg.thingraph.site/dwg_json_viewer.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/dwg_0.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/dwg_1.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/dwg_2.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/dxf_0.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/dxf_1.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/dxf_2.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/dxf_compare_1_viewport.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/dxf_compare_2_viewports.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/cad_compare_2_files.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/pdf_1.html</loc><priority>0.7</priority></url>
+  <url><loc>https://dwg.thingraph.site/technical_school.html</loc><priority>0.6</priority></url>
+  <url><loc>https://dwg.thingraph.site/rac_basic_sample_project.html</loc><priority>0.6</priority></url>
+  <url><loc>https://dwg.thingraph.site/BimTiles_test.html</loc><priority>0.6</priority></url>
+  <url><loc>https://dwg.thingraph.site/BimTiles_multi.html</loc><priority>0.6</priority></url>
+  <url><loc>https://dwg.thingraph.site/server_room.html</loc><priority>0.6</priority></url>
+  <url><loc>https://dwg.thingraph.site/assets-preview.html</loc><priority>0.5</priority></url>
+</urlset>
