@@ -72,7 +72,7 @@
         (function() {
             // Check if running locally (localhost, 127.0.0.1, or file:// protocol)
             const wl = window.location;
-            const isDevEnv = false;
+            const isDevEnv = wl.hostname === "localhost" || wl.hostname === "127.0.0.1";
 
             // Load jsoneditor based on environment
             const jsoneditorJsPath = isDevEnv
@@ -171,14 +171,14 @@
                     fileName1Element.textContent = file.name
                     
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = async function(e) {
                         const fileContent = e.target.result;
                         let version;
                         let codepage;
                         let stats = { unknownEntityCount: "" };
                         const parser = new DxfParser();
                         {
-                            const result = parser.libredwgConvertEx(fileContent);
+                            const result = await parser.libredwgConvertExAsync(fileContent);
                             jsonEditor1.set(result.database);
                             version = result.version;
                             codepage = result.codepage;
@@ -186,9 +186,8 @@
                         }
 
                         {
-                            // force to parse with libredwg-web parser
-                            // This will trigger libredwg-web to call libredwg.convertEx() again.
-                            const result = parser.parseDwg(fileContent);
+                            // Full x-viewer IDxf conversion (loads libredwg on demand via parseAsync)
+                            const result = await parser.parseAsync(fileContent);
                             jsonEditor2.set({
                                 tables: result.tables,
                                 objects: result.objects,
