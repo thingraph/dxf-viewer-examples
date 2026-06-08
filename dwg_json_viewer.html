@@ -72,7 +72,7 @@
         (function() {
             // Check if running locally (localhost, 127.0.0.1, or file:// protocol)
             const wl = window.location;
-            const isDevEnv = wl.hostname === "localhost" || wl.hostname === "127.0.0.1";
+            const isDevEnv = false;
 
             // Load jsoneditor based on environment
             const jsoneditorJsPath = isDevEnv

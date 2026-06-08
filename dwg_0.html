@@ -206,9 +206,9 @@
         new AxisGizmoPlugin(viewer, { ignoreZAxis: true });
         new BottomBarPlugin(viewer);
         const markupPlugin = new MarkupPlugin(viewer);
-        const measurementPlugin = new MeasurementPlugin(viewer, { language });
+        const measurementPlugin = new MeasurementPlugin(viewer);
         new ScreenshotPlugin(viewer);
-        new Settings2dPlugin(viewer, { language, visible: false });
+        new Settings2dPlugin(viewer, { visible: false });
         new StatsPlugin(viewer);
         const hotpointPlugin = new HotpointPlugin(viewer);
         window.toolbarPlugin = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });

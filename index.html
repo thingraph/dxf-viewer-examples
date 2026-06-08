@@ -271,6 +271,63 @@
             color: #6d4c41;
             text-decoration: underline;
         }
+        /* Products hub styles: left column stacked cards + right content column */
+        .products-hub {
+            margin: 36px 0 28px 0;
+            background: transparent;
+        }
+        .products-hub .hub-inner {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .products-hub h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+        .products-hub p.lead {
+            margin: 0 0 18px 0;
+            color: var(--muted);
+            line-height: 1.45;
+            max-width: 72ch;
+        }
+        .left-column { width: 320px; display:flex; flex-direction:column; gap:12px; }
+        .right-column { flex:1; min-height:120px; }
+        .hub-main-cards { display:flex; flex-direction:column; gap:12px; }
+        .hub-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,1));
+            border-radius: 10px;
+            padding: 12px 14px;
+            min-height: 62px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: transform .12s ease, box-shadow .12s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        .hub-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(17,24,39,0.08); border-color: rgba(109,76,65,0.12); }
+        .hub-card .title { font-weight: 800; color: var(--text); margin-bottom: 6px; font-size: 0.98rem; }
+        .hub-card .desc { color: var(--muted); font-size: 13px; line-height: 1.35; }
+        .integrations { margin-top: 12px; display:grid; grid-template-columns: 1fr; gap: 12px; }
+        @media(min-width:600px){ .integrations { grid-template-columns: repeat(2,1fr); } }
+        @media(min-width:880px){ .integrations { grid-template-columns: repeat(4,1fr); } }
+        /* Large screens: display four main cards in one row, adjust left/right column widths */
+        @media(min-width:1000px){
+            .products-hub .hub-inner { flex-direction: row; }
+            /* use full width for the content area (no right column) */
+            .left-column { width: 100%; }
+            .hub-main-cards { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 22px; width:100%; }
+            .hub-card { padding: 16px 18px; }
+        }
+        @media(max-width:999px){ .products-hub .hub-inner { flex-direction: column; } .left-column{ width:100%; } }
     </style>
 </head>
 
@@ -313,6 +370,55 @@
         </section>
 
         <div class="project-cards-container"></div>
+
+        <section class="products-hub" aria-labelledby="products-hub-title">
+            <div class="hub-inner">
+                <div class="left-column">
+                    <div>
+                        <h2 id="products-hub-title">Thingraph</h2>
+                        <p class="lead">Thingraph specializes in 2D/3D graphics rendering, delivering leading visualization and simulation solutions for industrial, architectural, home design, and digital twin applications—unlocking the future of visualization.</p>
+                    </div>
+
+                    <div class="hub-main-cards" role="list">
+                        <a class="hub-card" role="listitem" href="https://cad.thingraph.site/dwg-viewer" target="_blank" rel="noopener">
+                            <div class="title">DWG Viewer</div>
+                            <div class="desc">Upload and view DWG and DXF from your device.</div>
+                        </a>
+                        <a class="hub-card" role="listitem" href="https://cad.thingraph.site/cad-viewer" target="_blank" rel="noopener">
+                            <div class="title">CAD Viewer</div>
+                            <div class="desc">Upload and view gITF, GLB, OBJ, FBX, STL, IFC, STP, or STEP from your device.</div>
+                        </a>
+                        <a class="hub-card" role="listitem" href="https://cad.thingraph.site/cad-editor" target="_blank" rel="noopener">
+                            <div class="title">CAD Editor</div>
+                            <div class="desc">Upload and edit gITF, GLB, OBJ, FBX, STL, IFC, STP, or STEP from your device.</div>
+                        </a>
+                        <a class="hub-card" role="listitem" href="./dwg_0.html">
+                            <div class="title">Examples</div>
+                            <div class="desc">Try sample 2D and 3D files to explore viewer features.</div>
+                        </a>
+                    </div>
+
+                    <div class="integrations" aria-hidden="true">
+                        <a class="hub-card" href="https://workspace.google.com/marketplace/app/dwg_viewer/641533811831" target="_blank" rel="noopener"><div class="title">Google Drive™</div><div class="desc">DWG Viewer</div></a>
+                        <a class="hub-card" href="https://workspace.google.com/marketplace/app/cad_viewer/688654001920" target="_blank" rel="noopener"><div class="title">Google Drive™</div><div class="desc">CAD Viewer</div></a>
+                        <a class="hub-card" href="https://marketplace.visualstudio.com/items?itemName=thingraph.dwg-viewer" target="_blank" rel="noopener"><div class="title">Visual Studio Code</div><div class="desc">DWG Viewer</div></a>
+                        <a class="hub-card" href="https://marketplace.visualstudio.com/items?itemName=thingraph.cad-viewer" target="_blank" rel="noopener"><div class="title">Visual Studio Code</div><div class="desc">CAD Viewer</div></a>
+
+                        <a class="hub-card" href="https://open-vsx.org/extension/thingraph/dwg-viewer" target="_blank" rel="noopener"><div class="title">Cursor</div><div class="desc">DWG Viewer</div></a>
+                        <a class="hub-card" href="https://open-vsx.org/extension/thingraph/cad-viewer" target="_blank" rel="noopener"><div class="title">Cursor</div><div class="desc">CAD Viewer</div></a>
+                        <a class="hub-card" href="https://marketplace.atlassian.com/apps/2890472615" target="_blank" rel="noopener"><div class="title">Confluence</div><div class="desc">DWG Viewer</div></a>
+                        <a class="hub-card" href="https://marketplace.atlassian.com/apps/2639007334" target="_blank" rel="noopener"><div class="title">Confluence</div><div class="desc">CAD Viewer</div></a>
+
+                        <a class="hub-card" href="https://cad.thingraph.site/install/windows" target="_blank" rel="noopener"><div class="title">Windows</div><div class="desc">DWG Preview</div></a>
+                        <a class="hub-card" href="https://cad.thingraph.site/install/windows" target="_blank" rel="noopener"><div class="title">Windows</div><div class="desc">CAD Preview</div></a>
+                    </div>
+                </div>
+
+                <div class="right-column" aria-hidden="true">
+                    <!-- reserved for illustration or additional content -->
+                </div>
+            </div>
+        </section>
     </main>
 
     <script type="application/ld+json">
@@ -340,11 +446,9 @@
         <div class="footer-content">
             Contact: <a href="mailto:thingraph@outlook.com">thingraph@outlook.com</a>
             &nbsp;|&nbsp;
+            <a class="footer-link" href="https://www.thingraph.site/dwg-viewer" target="_blank" rel="noopener">Thingraph</a>
+            &nbsp;|&nbsp;
             <a class="footer-link" href="https://github.com/thingraph" target="_blank" rel="noopener">GitHub</a>
-            &nbsp;|&nbsp;
-            <a class="footer-link" href="https://cad.thingraph.site/examples" target="_blank" rel="noopener">CAD Viewer</a>
-            &nbsp;|&nbsp;
-            <a class="footer-link" href="https://drive.thingraph.site/examples" target="_blank" rel="noopener">DWG Viewer</a>
         </div>
     </footer>
 

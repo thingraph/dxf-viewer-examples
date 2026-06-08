@@ -116,9 +116,9 @@
         new AxisGizmoPlugin(viewer, { ignoreZAxis: true });
         new BottomBarPlugin(viewer);
         new MarkupPlugin(viewer);
-        new MeasurementPlugin(viewer, { language });
+        new MeasurementPlugin(viewer);
         new ScreenshotPlugin(viewer);
-        new Settings2dPlugin(viewer, { language, visible: false });
+        new Settings2dPlugin(viewer, { visible: false });
         new StatsPlugin(viewer);
         window.toolbarPlugin = new Viewer2dToolbarPlugin(viewer, { menuConfig, language });
 
